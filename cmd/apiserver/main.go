@@ -20,11 +20,12 @@ func init() {
 func main() {
 	flag.Parse()
 	config := apiserver.NewConfig()
-	err := cleanenv.ReadConfig(configPath, &config)
-	//err := cleanenv.ReadConfig("config.yaml", &config)
+	//err := cleanenv.ReadConfig(configPath, &config)
+	err := cleanenv.ReadConfig("config.yaml", &config)
 	if err != nil {
 		log.Fatal("couldn't read config: ", err)
 	}
+	log.Println(config.LocalHostMode, config.DatabaseURL.FullName, config.DatabaseURL.Host, config.DatabaseURL.Password, config.RedisURL, config.BindAddr)
 	err = apiserver.Start(&config)
 	if err != nil {
 		log.Fatal(err)
