@@ -20,8 +20,8 @@ func init() {
 func main() {
 	flag.Parse()
 	config := apiserver.NewConfig()
-	//err := cleanenv.ReadConfig(configPath, &config)
-	err := cleanenv.ReadConfig("config.yaml", &config)
+	err := cleanenv.ReadConfig(configPath, &config)
+	//err := cleanenv.ReadConfig("config.yaml", &config)
 	if err != nil {
 		log.Fatal("couldn't read config: ", err)
 	}
