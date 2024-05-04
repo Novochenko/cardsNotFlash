@@ -14,7 +14,7 @@ registerButton.addEventListener('click', (e) => {
   const email = emailInput.value;
   const password = passwordInput.value;
   // Отправляем запрос на сервер
-  fetch('/users', {
+  fetch('http://localhost:8080/users', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
