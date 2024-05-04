@@ -1,8 +1,8 @@
 // Получаем элементы формы
 const form = document.getElementById('register-form');
-const nicknameInput = document.getElementById("nickname");
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
+//const nicknameInput = document.getElementById("nickname");
+//const emailInput = document.getElementById("email");
+//const passwordInput = document.getElementById("password");
 const registerButton = document.getElementById('register-btn');
 const responseDiv = document.getElementById('register-response');
 
@@ -10,20 +10,23 @@ const responseDiv = document.getElementById('register-response');
 // Добавляем обработчик события на кнопку регистрации
 registerButton.addEventListener('click', (e) => {
   e.preventDefault();
-  const nickname = nicknameInput.value;
-  const email = emailInput.value;
-  const password = passwordInput.value;
+  const nickname = document.getElementById('nickname').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  const userData = {
+    nickname,
+    email,
+    password
+  };
+
   // Отправляем запрос на сервер
   fetch('/users', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      nickname,
-      email,
-      password
-    })
+    body: JSON.stringify(userData)
   })
   .then((response) => response.json())
   .then((data) => {
@@ -38,3 +41,13 @@ registerButton.addEventListener('click', (e) => {
     console.error(error);
   });
 });
+
+
+/*<span>Или используйте e-mail для регистрации</span>
+<label for="nickname">Никнейм</label>
+<input type="text" id="nickname" >
+<label for="email">E-mail</label>
+<input id="email" type="email" >
+<label for="password">Пароль</label>
+<input id="password" type="password">
+<button id="register-btn">Создать</button>*/
