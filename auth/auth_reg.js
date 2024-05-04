@@ -1,8 +1,8 @@
 // Получаем элементы формы
 const form = document.getElementById('register-form');
-const nicknameInput = document.getElementById('nickname');
-const emailInput = document.getElementById('email');
-const passwordInput = document.getElementById('password');
+const nicknameInput = document.getElementById("nickname");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 const registerButton = document.getElementById('register-btn');
 const responseDiv = document.getElementById('register-response');
 
