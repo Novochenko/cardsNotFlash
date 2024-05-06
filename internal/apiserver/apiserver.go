@@ -24,6 +24,10 @@ func Start(config *Config) error {
 	}
 	//sessionStore = sessions.NewCookieStore([]byte(config.SessionKey))
 	s := newServer(store, config, sessionStore)
+	// headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	// originsOk := handlers.AllowedOrigins([]string{"*"})
+	// methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	// return http.ListenAndServe(config.BindAddr, handlers.CORS(originsOk, headersOk, methodsOk)(s))
 	return http.ListenAndServe(config.BindAddr, s)
 }
 func NewRedisSessions(config *Config) (*redisstore.RedisStore, error) {

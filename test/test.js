@@ -13,7 +13,7 @@ form.addEventListener('submit', (e) => {
     password
   };
 
-  fetch('/users', {
+  fetch('localhost:8080/users', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

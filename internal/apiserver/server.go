@@ -69,10 +69,19 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *server) configureRouter() {
 	s.router.Use(s.setRequestID)
 	s.router.Use(s.logReqeust)
-	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"})))
+	// s.router.Use(cors.New(
+	// 	cors.Options{
+	// 		AllowedOrigins: []string{"*"},
+	// 		AllowedHeaders: []string{"*"},
+	// 		Debug:          false,
+	// 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}},
+	// ).Handler)
+	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
+		handlers.AllowedHeaders([]string{"*"}),
+		handlers.AllowCredentials()))
 	s.router.HandleFunc("/users", s.HandleUsersCreate()).Methods("POST")
 	s.router.HandleFunc("/sessions", s.HandleSessionsCreate()).Methods("POST")
-
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/show", s.HandleShow()).Methods(http.MethodGet)
@@ -165,6 +174,7 @@ func (s *server) HandleCardsShowUsingTime() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(cards); err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
@@ -274,6 +284,7 @@ func (s *server) HandleCardCreate() http.HandlerFunc {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}
+		s.respond(w, r, http.StatusOK, nil)
 	}
 }
 
@@ -305,7 +316,7 @@ func (s *server) HandleDeleteCard() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
-
+		s.respond(w, r, http.StatusOK, nil)
 	}
 }
 
@@ -329,6 +340,7 @@ func (s *server) HandleShow() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(cards); err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
@@ -407,6 +419,7 @@ func (s *server) HandleUsersCreate() http.HandlerFunc {
 
 		u.Sanitize()
 		s.respond(w, r, http.StatusCreated, u, ulk)
+		//s.respond(w, r, http.StatusCreated, u)
 	}
 }
 
@@ -414,6 +427,7 @@ func (s *server) error(w http.ResponseWriter, r *http.Request, code int, err err
 	s.respond(w, r, code, map[string]string{"error": err.Error()})
 }
 func (s *server) respond(w http.ResponseWriter, r *http.Request, code int, data ...interface{}) {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	if data != nil {
 		json.NewEncoder(w).Encode(data)
