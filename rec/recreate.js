@@ -1,45 +1,55 @@
-const loadBtn = document.getElementById('load-btn');
-const jsonFilesSelect = document.getElementById('json-files');
-const updateBtn = document.getElementById('update-btn');
-const jsonDataDiv = document.getElementById('json-data');
-
-loadBtn.addEventListener('click', loadJsonFiles);
-updateBtn.addEventListener('click', updateJsonFile);
-
-function loadJsonFiles() {
-  fetch('https://localhost:8080/editcard')
-    .then(response => response.json())
-    .then(data => {
-      const options = data.map(file => {
-        return `<option value="${file}">${file}</option>`;
-      });
-      jsonFilesSelect.innerHTML = options.join('');
-    })
-    .catch(error => console.error('Error:', error));
+// Функция для получения списка JSON файлов из базы данных
+async function getJsonFiles() {
+  try {
+    const response = await fetch('localhost:8080/editcard'); // замените на URL вашей базы данных
+    const data = await response.json();
+    const options = data.map(item => `<option value="${item.id}">${item.question}</option>`);
+    document.getElementById('json-select').innerHTML = options.join('');
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-function updateJsonFile() {
-  const selectedFile = jsonFilesSelect.value;
-  fetch(`https://localhost:8080/${selectedFile}`)
-    .then(response => response.json())
-    .then(data => {
-      jsonDataDiv.innerHTML = `ID: ${data.id}<br>Вопрос: ${data.question}<br>Ответ: ${data.answer}`;
-      // Создаем объект для хранения изменений
-      const changes = {};
-      // ...
-      // Отправляем обновленный файл на сервер
-      fetch(`https://localhost:8080/${selectedFile}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(changes)
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('JSON-файл обновлен успешно!');
-      })
-      .catch(error => console.error('Error:', error));
-    })
-    .catch(error => console.error('Error:', error));
+// Функция для получения выбранного JSON файла
+async function getSelectedJson() {
+  const selectedId = document.getElementById('json-select').value;
+  try {
+    const response = await fetch(`localhost:8080/editcard/${selectedId}`); // замените на URL вашей базы данных
+    const data = await response.json();
+    document.getElementById('json-data').innerHTML = `
+      <p>Вопрос: ${data.question}</p>
+      <p>Ответ: ${data.answer}</p>
+    `;
+  } catch (error) {
+    console.error(error);
+  }
 }
+
+// Функция для редактирования выбранного JSON файла
+async function editJsonData() {
+  const selectedId = document.getElementById('json-select').value;
+  const question = prompt("Введите новый вопрос:");
+  const answer = prompt("Введите новый ответ:");
+  try {
+    const response = await fetch(`localhost:8080/editcard/${selectedId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ question, answer })
+    }); // замените на URL вашей базы данных
+    if (response.ok) {
+      alert("JSON файл обновлен успешно!");
+    } else {
+      alert("Ошибка обновления JSON файла");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+// Инициализация
+//getJsonFiles();
+document.getElementById('load-btn').addEventListener('click',getJsonFiles)
+document.getElementById('edit-btn').addEventListener('click', editJsonData);
+document.getElementById('json-select').addEventListener('change', getSelectedJson);

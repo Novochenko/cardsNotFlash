@@ -7,7 +7,7 @@ loadBtn.addEventListener('click', loadJsonFiles);
 deleteBtn.addEventListener('click', deleteJsonFile);
 
 function loadJsonFiles() {
-  fetch('https://localhost:8080/deletecard')
+  fetch('localhost:8080/deletecard')
     .then(response => response.json())
     .then(data => {
       const options = data.map(file => {
@@ -20,7 +20,7 @@ function loadJsonFiles() {
 
 function deleteJsonFile() {
   const selectedFile = jsonFilesSelect.value;
-  fetch(`https://localhost:8080/deletecard/${selectedFile}`, {
+  fetch(`localhost:8080/deletecard/${selectedFile}`, {
     method: 'DELETE'
   })
   .then(response => response.json())

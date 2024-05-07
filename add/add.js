@@ -1,6 +1,6 @@
-const form = document.getElementById('question-form');
+const addForm = document.getElementById('question-form');
 const submitBtn = document.getElementById('submit-btn');
-const responseDiv = document.getElementById('response');
+const responseAdd = document.getElementById('response');
 
 let questionId = 1; // начальный ID вопроса
 
@@ -20,7 +20,7 @@ submitBtn.addEventListener('click', (e) => {
   const jsonData = JSON.stringify(questionData);
 
   // Отправляем JSON-файл на сервер
-  fetch('https://localhost:8080/createcard'/* Наш сервер */, {
+  fetch('localhost:8080/createcard', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
