@@ -1,4 +1,42 @@
-function sendRequest() {
+const loginForm = document.getElementById('login-form');
+const loginButton = document.getElementById('login-btn');
+const responseLogin = document.getElementById('login-response');
+  
+  
+  // Добавляем обработчик события на кнопку регистрации
+  loginButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+  
+    const userData = {
+      email,
+      password
+    };
+  
+    // Отправляем запрос на сервер
+    fetch("/sessions", {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(userData)
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.success) {
+        responseLogin.innerHTML = 'Пользователь вошел успешно!';
+        window.location.href = "../main/main.html"
+      } else {
+        responseLogin.innerHTML = 'Ошибка регистрации: ' + data.error;
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  });
+
+  /*function sendRequest() {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
@@ -21,5 +59,6 @@ function sendRequest() {
         alert('Error: ' + xhr.status);
       }
     };
-  }
+  }*/
 
+  
