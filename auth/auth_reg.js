@@ -42,13 +42,3 @@ registerButton.addEventListener('click', (e) => {
     console.error(error);
   });
 });
-
-
-/*<span>Или используйте e-mail для регистрации</span>
-<label for="nickname">Никнейм</label>
-<input type="text" id="nickname" >
-<label for="email">E-mail</label>
-<input id="email" type="email" >
-<label for="password">Пароль</label>
-<input id="password" type="password">
-<button id="register-btn">Создать</button>*/
