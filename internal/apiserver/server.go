@@ -77,20 +77,20 @@ func (s *server) configureRouter() {
 	// 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}},
 	// ).Handler)
 	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
-		handlers.AllowedHeaders([]string{"*"}),
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With"}),
 		handlers.AllowCredentials()))
-	s.router.HandleFunc("/users", s.HandleUsersCreate()).Methods("POST")
-	s.router.HandleFunc("/sessions", s.HandleSessionsCreate()).Methods("POST")
+	s.router.HandleFunc("/users", s.HandleUsersCreate()).Methods("POST", http.MethodOptions)
+	s.router.HandleFunc("/sessions", s.HandleSessionsCreate()).Methods("POST", http.MethodOptions)
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/show", s.HandleShow()).Methods(http.MethodGet)
-	private.HandleFunc("/createcard", s.HandleCardCreate()).Methods("POST")
-	private.HandleFunc("/deletecard", s.HandleDeleteCard()).Methods(http.MethodPost)
-	private.HandleFunc("/editcard", s.HandleCardEdit()).Methods(http.MethodPost)
-	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
-	private.HandleFunc("/showusingtime", s.HandleCardsShowUsingTime()).Methods(http.MethodGet)
-	private.HandleFunc("/updatecardflag", s.HandleCardFlagUp()).Methods(http.MethodPost)
+	private.HandleFunc("/createcard", s.HandleCardCreate()).Methods("POST", http.MethodOptions)
+	private.HandleFunc("/deletecard", s.HandleDeleteCard()).Methods(http.MethodPost, http.MethodOptions)
+	private.HandleFunc("/editcard", s.HandleCardEdit()).Methods(http.MethodPost, http.MethodOptions)
+	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET", http.MethodOptions)
+	private.HandleFunc("/showusingtime", s.HandleCardsShowUsingTime()).Methods(http.MethodGet, http.MethodOptions)
+	private.HandleFunc("/updatecardflag", s.HandleCardFlagUp()).Methods(http.MethodPost, http.MethodOptions)
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {

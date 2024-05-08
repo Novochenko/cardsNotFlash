@@ -13,15 +13,15 @@ var (
 )
 
 func init() {
-	//flag.StringVar(&configPath, "config-path", "D:/User/smth/go/goProjects/flesh-carti/guideAPIGolang/configs/apiserver/config.yaml", "path to config file")
-	flag.StringVar(&configPath, "config-path", "config.yaml", "path to config file")
+	flag.StringVar(&configPath, "config-path", "D:/User/smth/go/goProjects/flesh-cards-backup/configs/apiserver/config.yaml", "path to config file")
+	//flag.StringVar(&configPath, "config-path", "config.yaml", "path to config file")
 }
 
 func main() {
 	flag.Parse()
 	config := apiserver.NewConfig()
-	//err := cleanenv.ReadConfig(configPath, &config)
-	err := cleanenv.ReadConfig("config.yaml", &config)
+	err := cleanenv.ReadConfig(configPath, &config)
+	//err := cleanenv.ReadConfig("config.yaml", &config)
 	if err != nil {
 		log.Fatal("couldn't read config: ", err)
 	}

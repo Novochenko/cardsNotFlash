@@ -21,10 +21,11 @@ registerButton.addEventListener('click', (e) => {
   };
 
   // Отправляем запрос на сервер
-  fetch("/users", {
+  fetch("http://127.0.0.1:9000/users", {
     method: 'POST',
+    //mode: 'no-cors',
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(userData)
   })
