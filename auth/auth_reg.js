@@ -26,18 +26,26 @@ registerButton.addEventListener('click', (e) => {
     },
     body: JSON.stringify(userData)
   })
-  .then((response) => response.text())
+  .then((response) => response.json())
+   /* {
+        if (response.ok){
+          console.log('ok')
+          window.location.href= "../main/main.html"
+        }
+        else{
+          console.log('error')
+        }
+        return response.json()
+  })*/
   .then((data) => {
+    console.log(data)
+  })
+/*  .then((data) => {
     document.getElementById('register-response').innerHTML = data;
-    if (data.success) {
       data.innerHTML = 'Пользователь зарегистрирован успешно!';
       window.location.href = "../main/main.html"
-    } 
-    else {
-      data.innerHTML = 'Ошибка регистрации: ' + data.error;
-    }
+      data.innerHTML = 'Ошибка регистрации: ' + data.error;*/
   })
   .catch(error => {
     console.error(error);
   });
-});
