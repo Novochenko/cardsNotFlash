@@ -49,5 +49,3 @@ registerButton.addEventListener('click', (e) => {
   .catch(error => {
     console.error(error);
   });
-
-});
