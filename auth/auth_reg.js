@@ -1,10 +1,7 @@
 // Получаем элементы формы
 const form = document.getElementById('register-form');
-//const nicknameInput = document.getElementById("nickname");
-//const emailInput = document.getElementById("email");
-//const passwordInput = document.getElementById("password");
 const registerButton = document.getElementById('register-btn');
-const responseDiv = document.getElementById('register-response');
+//const data = document.getElementById('register-response');
 
 
 // Добавляем обработчик события на кнопку регистрации
@@ -29,16 +26,28 @@ registerButton.addEventListener('click', (e) => {
     },
     body: JSON.stringify(userData)
   })
-  .then((responseDiv) => responseDiv.json())
+  .then((response) => response.json())
+   /* {
+        if (response.ok){
+          console.log('ok')
+          window.location.href= "../main/main.html"
+        }
+        else{
+          console.log('error')
+        }
+        return response.json()
+  })*/
   .then((data) => {
-    if (data.success) {
-      responseDiv.innerHTML = 'Пользователь зарегистрирован успешно!';
-      window.location.href = "../main/main.html"
-    } else {
-      responseDiv.innerHTML = 'Ошибка регистрации: ' + data.error;
-    }
+    console.log(data)
   })
-  .catch((error) => {
+/*  .then((data) => {
+    document.getElementById('register-response').innerHTML = data;
+      data.innerHTML = 'Пользователь зарегистрирован успешно!';
+      window.location.href = "../main/main.html"
+      data.innerHTML = 'Ошибка регистрации: ' + data.error;*/
+  })
+  .catch(error => {
     console.error(error);
   });
+
 });
