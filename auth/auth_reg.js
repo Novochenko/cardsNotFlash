@@ -29,7 +29,7 @@ registerButton.addEventListener('click', (e) => {
     },
     body: JSON.stringify(userData)
   })
-  .then((response) => response.json())
+  .then((responseDiv) => responseDiv.json())
   .then((data) => {
     if (data.success) {
       responseDiv.innerHTML = 'Пользователь зарегистрирован успешно!';
