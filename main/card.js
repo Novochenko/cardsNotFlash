@@ -2,6 +2,20 @@
 // index 0 will be chosen as default on page load
 const questionSetsJSON = [test, test2];
 
+fetch('http://26.229.38.10:9000/private/showusingtime', {
+    method: 'GET',
+    headers:{
+    'Content-Type': 'application/json'
+    }
+})
+  .then(response => response.json())
+  .then(data => {
+    console.log(data); // массив объектов со свойствами id, userId, frontSide, backSide
+    data.forEach(item => {
+      console.log(`ID: ${item.id}, UserID: ${item.user_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
+    });
+  })
+  .catch(error => console.error('Error:', error));
 
 // ask youser before leaving the page if they really want to
 window.addEventListener("beforeunload", (e) => {
@@ -10,12 +24,12 @@ window.addEventListener("beforeunload", (e) => {
 });
 
 // getting the DOM elements 
-// Card Elements
+// Элементы карточки
 let card = document.querySelector(".card")
 let question = document.querySelector(".question");
 let solution = document.querySelector(".solution");
 let inputField = document.querySelector(".answer");
-// Buttons
+// Кнопки
 let checkAnswerBUTTON = document.querySelector(".check_answer");
 let newWordBUTTON = document.querySelector(".new_word");
 let correctBUTTON = document.querySelector(".correct");
@@ -28,7 +42,7 @@ const cardDeckOptions = [
     "test2"
 ];
 
-// Text below the Cards
+// Текст под карточкой
 let remainingCards = document.querySelector(".remaining");
 let knownCards = document.querySelector("#known");
 let knownCardsCounter = 0;
@@ -55,11 +69,11 @@ deckOptions.addEventListener("change", (e) => {
     newCard();
     });
 
-// flip Answer-Card back to Question
+// повернуть сторону ответа на вопрос
 returnBUTTON.addEventListener("click", () => card.classList.remove("flipped"));
 
 
-// gets a random pair (question/answer) from the a given array of objects
+// взять рандомную пару (вопрос/ответ) из всех
 function getQuestionPair(dict) {
     let rand = Math.floor(Math.random() * dict.length);
     return Object.entries(dict)[rand][1];
@@ -192,3 +206,4 @@ correctBUTTON.addEventListener("click", () => {
 
 // reload the page / begin from the beginning
 reloadBUTTON.addEventListener("click", () => location.reload());
+
