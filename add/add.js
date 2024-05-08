@@ -20,7 +20,7 @@ submitBtn.addEventListener('click', (e) => {
   const jsonData = JSON.stringify(questionData);
 
   // Отправляем JSON-файл на сервер
-  fetch('localhost:8080/createcard', {
+  fetch('127.0.0.1:9000/createcard', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

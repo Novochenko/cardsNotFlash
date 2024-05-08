@@ -15,7 +15,7 @@ const responseLogin = document.getElementById('login-response');
     };
   
     // Отправляем запрос на сервер
-    fetch("/sessions", {
+    fetch("http://127.0.0.1:9000/sessions", {
       method: 'POST',
       headers: {
         "Content-Type": "application/json"
