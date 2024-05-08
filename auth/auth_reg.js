@@ -26,8 +26,8 @@ registerButton.addEventListener('click', (e) => {
     },
     body: JSON.stringify(userData)
   })
-  .then((response) => response.json())
-   /* {
+  .then((response) =>
+ {
         if (response.ok){
           console.log('ok')
           window.location.href= "../main/main.html"
@@ -36,7 +36,7 @@ registerButton.addEventListener('click', (e) => {
           console.log('error')
         }
         return response.json()
-  })*/
+  })
   .then((data) => {
     console.log(data)
   })
@@ -45,7 +45,7 @@ registerButton.addEventListener('click', (e) => {
       data.innerHTML = 'Пользователь зарегистрирован успешно!';
       window.location.href = "../main/main.html"
       data.innerHTML = 'Ошибка регистрации: ' + data.error;*/
-  })
   .catch(error => {
     console.error(error);
-  });
+  })
+});
