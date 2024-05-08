@@ -23,7 +23,7 @@ const responseLogin = document.getElementById('login-response');
       body: JSON.stringify(userData)
     })
     .then((response) => response.json())
-    .then((data) => {
+    .then(data => {
       if (data.success) {
         responseLogin.innerHTML = 'Пользователь вошел успешно!';
         window.location.href = "../main/main.html"
@@ -31,7 +31,7 @@ const responseLogin = document.getElementById('login-response');
         responseLogin.innerHTML = 'Ошибка регистрации: ' + data.error;
       }
     })
-    .catch((error) => {
+    .catch(error => {
       console.error(error);
     });
   });
