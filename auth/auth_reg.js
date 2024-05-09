@@ -1,8 +1,6 @@
 // Получаем элементы формы
 const form = document.getElementById('register-form');
 const registerButton = document.getElementById('register-btn');
-//const data = document.getElementById('register-response');
-
 
 // Добавляем обработчик события на кнопку регистрации
 registerButton.addEventListener('click', (e) => {
@@ -18,7 +16,7 @@ registerButton.addEventListener('click', (e) => {
   };
 
   // Отправляем запрос на сервер
-  fetch("http://127.0.0.1:9000/users", {
+  fetch("http://26.229.38.10:9000/users", {
     method: 'POST',
     //mode: 'no-cors',
     headers: {

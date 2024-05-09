@@ -1,15 +1,55 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.muicss.com/mui-latest/css/mui.min.css" rel="stylesheet" type="text/css" />
+  <link href="../static/style.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="recreate.css"/>
+  <script src="https://cdn.muicss.com/mui-latest/js/mui.min.js"></script>
+  <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
   <title>Загрузка списка JSON-файлов и изменение выбранного файла</title>
 </head>
 <body>
-  <h1>Загрузка списка JSON-файлов и изменение выбранного файла</h1>
-  <button id="load-btn">Загрузить список JSON-файлов</button>
-  <select id="json-select"></select>
-  <button id="edit-btn">Обновить выбранный файл</button>
-  <div id="json-data"></div>
+  <div id="sidedrawer" class="mui--no-user-select">
+    <div id="sidedrawer-brand" class="mui--appbar-line-height">
+      <a class="mui--text-title" href="../main/main.html">Флеш-карточки</a>
+    </div>
+    <div class="mui-divider"></div>
+    <ul>
+      <li>
+        <li><strong><a href="../user/user.html">Пользователь</a></strong></li>
+        <li><strong><a href="../add/add.html">Добавить карточку</a></strong></li>
+        <li><strong><a href="../rec/recreate.html">Редактировать карточку</a></strong></li>
+        <li><strong><a href="../del/delete.html">Удалить карточку</a></strong></li>
+        <li><strong><a href="../authors.html">Авторы</a></strong></li>
+      </li>
+    </ul>
+  </div>
+  <header id="header">
+    <div class="mui-appbar mui--appbar-line-height">
+      <div class="mui-container-fluid">
+        <a class="sidedrawer-toggle mui--visible-xs-inline-block mui--visible-sm-inline-block js-how-sidedrawer">☰</a>
+        <a class="sidedrawer-toggle mui--hidden-xs mui--hidden-sm js-hide-sidedrawer">☰</a>
+        <span class="mui--text-title mui--visible-xs-inline-block mui--visible-sm-inline-block">Флеш-карточки</span>
+      </div>
+    </div>
+  </header>
 
+  <h1>Загрузка списка JSON-файлов и изменение выбранного файла</h1>
+  <div id="content-wrapper" >
+    <div class="mui--appbar-height" style="color: #0288D1" >Загрузка списка JSON-файлов и изменение выбранного файла</div>
+    <button id="load-btn">Загрузить список JSON-файлов</button>
+    <select id="json-select"></select>
+    <button id="edit-btn">Обновить выбранный файл</button>
+    <div id="json-data"></div>
+  </div>
   <script src="recreate.js"></script>
+  <script src="../static/script.js"></script>
 </body>
+<footer id="footer">
+  <div class="mui-container-fluid">
+  </div>
+</footer>
 </html>

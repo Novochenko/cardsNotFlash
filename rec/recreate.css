@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+button#load-btn {
+    font-size: calc(20px);
+}
+select#json-select {
+    font-size: calc(20px);
+}
+button#edit-btn {
+    font-size: calc(20px);
+}
+
+.appbar-title{
+    font-size: calc(20px);
+}
+
+.mui--appbar-height{
+    font-size: 20px;
+}
