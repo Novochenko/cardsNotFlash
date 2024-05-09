@@ -69,17 +69,11 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (s *server) configureRouter() {
 	s.router.Use(s.setRequestID)
 	s.router.Use(s.logReqeust)
-	// s.router.Use(cors.New(
-	// 	cors.Options{
-	// 		AllowedOrigins: []string{"*"},
-	// 		AllowedHeaders: []string{"*"},
-	// 		Debug:          false,
-	// 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodOptions, http.MethodDelete}},
-	// ).Handler)
-	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"}),
+	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"}), // тут воровская звезда
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
-		handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With"}),
-		handlers.AllowCredentials()))
+		handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Set-Cookie", "Cookie"}),
+		handlers.AllowCredentials(),
+	))
 	s.router.HandleFunc("/users", s.HandleUsersCreate()).Methods("POST", http.MethodOptions)
 	s.router.HandleFunc("/sessions", s.HandleSessionsCreate()).Methods("POST", http.MethodOptions)
 	private := s.router.PathPrefix("/private").Subrouter()
@@ -91,6 +85,7 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET", http.MethodOptions)
 	private.HandleFunc("/showusingtime", s.HandleCardsShowUsingTime()).Methods(http.MethodGet, http.MethodOptions)
 	private.HandleFunc("/updatecardflag", s.HandleCardFlagUp()).Methods(http.MethodPost, http.MethodOptions)
+	private.HandleFunc("/sessionquit", s.SessionsQuit()).Methods(http.MethodGet, http.MethodOptions)
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
@@ -180,6 +175,18 @@ func (s *server) HandleCardsShowUsingTime() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
+	}
+}
+func (s *server) SessionsQuit() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, err := s.sessionStore.Get(r, sessionKeyName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		session.Options.MaxAge = 0
+		session.Save(r, w)
+		w.WriteHeader(200)
 	}
 }
 
