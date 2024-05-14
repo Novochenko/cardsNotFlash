@@ -15,8 +15,7 @@ const responseLogin = document.getElementById('login-response');
     };
   
     // Отправляем запрос на сервер
-
-    fetch("http://26.229.38.10:9000/sessions", {
+    fetch("https://127.0.0.1:443/sessions", {
       credentials: 'include',
       method: 'POST',
       headers: {
