@@ -24,11 +24,17 @@ func Start(config *Config) error {
 	}
 	//sessionStore = sessions.NewCookieStore([]byte(config.SessionKey))
 	s := newServer(store, config, sessionStore)
-	// headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
-	// originsOk := handlers.AllowedOrigins([]string{"*"})
-	// methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-	// return http.ListenAndServe(config.BindAddr, handlers.CORS(originsOk, headersOk, methodsOk)(s))
-	return http.ListenAndServe(config.BindAddr, s)
+	// Проверяем, доступен ли cert файл.
+	//err = httpscerts.Check(config.CertPem, config.KeyPem)
+	// Если он недоступен, то генерируем новый.
+	// if err != nil {
+	// 	err = httpscerts.Generate(config.CertPem, config.KeyPem, "127.0.0.1"+config.BindAddr)
+	// 	if err != nil {
+	// 		log.Fatal("Ошибка: Не можем сгенерировать https сертификат.")
+	// 	}
+	// }
+	//return http.ListenAndServe(":9000", s)
+	return http.ListenAndServeTLS(config.BindAddr, config.CertPem, config.KeyPem, s)
 }
 func NewRedisSessions(config *Config) (*redisstore.RedisStore, error) {
 	var RedisURL string
@@ -47,6 +53,7 @@ func NewRedisSessions(config *Config) (*redisstore.RedisStore, error) {
 		slog.Error("Error connecting redis")
 		return nil, err
 	}
+	slog.Info("Connected to redis")
 	return sessionStore, err
 }
 
@@ -66,10 +73,10 @@ func newDB(config *Config) (*sql.DB, error) {
 			config.DatabaseURL.DBName))
 	}
 	//db, err := sql.Open("mysql", databaseURL.FullName)
-
 	if err != nil {
 		slog.Error("error opening mysql\n")
 		return nil, err
 	}
+	slog.Info("Connected to mysql serv\n")
 	return db, nil
 }

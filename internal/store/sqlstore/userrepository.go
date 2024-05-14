@@ -11,9 +11,6 @@ type UserRepository struct {
 }
 
 func (ur *UserRepository) Create(u *model.User) error {
-	// if err := u.Validate(); err != nil {
-	// 	return err
-	// }
 	if err := u.EncryptPassword(); err != nil {
 		return err
 	}
@@ -26,6 +23,7 @@ func (ur *UserRepository) Create(u *model.User) error {
 	if err != nil {
 		return err
 	}
+	stmt.Close() // чек такой
 	if u.ID, err = res.LastInsertId(); err != nil {
 		return err
 	}

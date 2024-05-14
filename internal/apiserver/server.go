@@ -63,17 +63,18 @@ func newServer(store store.Store, config *Config, sessionStore sessions.Store) *
 }
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	slog.Info("s.router.ServeHTTP(w, r) прошел")
 	s.router.ServeHTTP(w, r)
 }
 
 func (s *server) configureRouter() {
-	s.router.Use(s.setRequestID)
-	s.router.Use(s.logReqeust)
-	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"*"}), // тут воровская звезда
+	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"http://127.0.0.1:5500"}), // тут воровская звезда
 		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
-		handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Set-Cookie", "Cookie"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Accept", "Origin", "X-Request-ID" /*, "Set-Cookie", "Cookie"*/}),
 		handlers.AllowCredentials(),
 	))
+	s.router.Use(s.setRequestID)
+	s.router.Use(s.logReqeust)
 	s.router.HandleFunc("/users", s.HandleUsersCreate()).Methods("POST", http.MethodOptions)
 	s.router.HandleFunc("/sessions", s.HandleSessionsCreate()).Methods("POST", http.MethodOptions)
 	private := s.router.PathPrefix("/private").Subrouter()
@@ -249,6 +250,10 @@ func (s *server) HandleSessionsCreate() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
+		session.Options.Path = "/private"
+		session.Options.SameSite = http.SameSiteNoneMode
+		session.Options.HttpOnly = true
+		// session.Options.Secure = true
 		session.Values["user_id"] = u.ID
 		if err := s.sessionStore.Save(r, w, session); err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
@@ -390,11 +395,14 @@ func (s *server) HandleUsersCreate() http.HandlerFunc {
 		Nickname string `json:"nickname"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		req := &request{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 			s.error(w, r, http.StatusBadRequest, err)
 			return
 		}
+		slog.Info(fmt.Sprintf("Request in HUC: %s, %s, %s", req.Nickname, req.Email, req.Password))
+		slog.Info(fmt.Sprintf("*http.Request in HUC: %s, %s, %s", r.Host, r.Method, r.RequestURI))
 		if err := s.store.UserLK().FindByNickname(req.Nickname); err != nil {
 			s.error(w, r, http.StatusBadRequest, err)
 			return
@@ -410,6 +418,7 @@ func (s *server) HandleUsersCreate() http.HandlerFunc {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}
+		slog.Info(fmt.Sprintf("model.User: %s, %s, %d", u.Email, u.Password, u.ID))
 		if err := s.store.User().Create(u); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
@@ -417,13 +426,12 @@ func (s *server) HandleUsersCreate() http.HandlerFunc {
 		ulk.UserID = u.ID
 		if err := s.store.UserLK().Create(ulk); err != nil {
 			if err = s.store.User().Delete(u.ID); err != nil {
-				s.error(w, r, http.StatusBadRequest, err)
+				s.error(w, r, http.StatusInternalServerError, err)
 				return
 			}
 			s.error(w, r, http.StatusBadRequest, err)
 			return
 		}
-
 		u.Sanitize()
 		s.respond(w, r, http.StatusCreated, u, ulk)
 		//s.respond(w, r, http.StatusCreated, u)
@@ -431,6 +439,7 @@ func (s *server) HandleUsersCreate() http.HandlerFunc {
 }
 
 func (s *server) error(w http.ResponseWriter, r *http.Request, code int, err error) {
+	slog.Error(fmt.Sprintf("Error: %s", err.Error()))
 	s.respond(w, r, code, map[string]string{"error": err.Error()})
 }
 func (s *server) respond(w http.ResponseWriter, r *http.Request, code int, data ...interface{}) {

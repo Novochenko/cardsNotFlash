@@ -21,6 +21,8 @@ type Config struct {
 	SessionKey    string      `yaml:"session_key"`
 	RedisURL      RedisURL    `yaml:"redis_url"`
 	LocalHostMode bool        `yaml:"localhost_mode"`
+	KeyPem        string      `yaml:"key_pem"`
+	CertPem       string      `yaml:"cert_pem"`
 }
 
 func NewConfig() Config {

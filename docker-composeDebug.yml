@@ -24,14 +24,14 @@ services:
       volumes:
         - ./data/mysql1:/var/lib/mysql
       restart: always
-  # nginx:
-
-  app:
-    image: flesh-cards:local
-    container_name: fc-backend
+  debug:
+    build:
+      dockerfile: D:/User/smth/go/goProjects/flesh-cards-backup/DockerfileDebug
+      # context: ../../
     ports:
-      - "9000:9000"
-    restart: always
+      - 2345:2345
+    command: ["dlv", "--listen=:2345", "--headless=true", "--log=true", "--log-output=debugger,debuglineerr,gdbwire,lldbout,rpc", "--accept-multiclient", "--api-version=2", "exec", "./app"]
+    # command: "--listen=:2345 --headless=true --log=true --log-output=debugger,debuglineerr,gdbwire,lldbout,rpc --accept-multiclient --api-version=2 exec ./usr/local/src/app"
     depends_on:
-      - mysql
       - redis
+      - mysql

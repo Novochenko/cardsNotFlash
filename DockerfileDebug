@@ -1,0 +1,23 @@
+
+FROM golang:1.22-alpine AS builder
+
+WORKDIR /usr/local/src
+# RUN apk --no-cache add bash git make gcc gettext musl-dev
+
+# COPY ["go.mod", "go.sum", "./"]
+# RUN go mod download
+
+COPY ./ ./
+# RUN CGO_ENABLED=0 go install -ldflags "-s -w -extldflags '-static'" github.com/go-delve/delve/cmd/dlv
+# github.com/go-delve/delve/tree/master/cmd/dlv
+# github.com/go-delve/delve/cmd/dlv@latest
+RUN CGO_ENABLED=0 go get -ldflags "-s -w -extldflags '-static'" github.com/go-delve/delve/cmd/dlv@latest
+RUN CGO_ENABLED=0 go build -gcflags "all=-N -l" -o ./app cmd/apiserver/main.go
+
+FROM alpine AS debuger
+
+COPY --from=builder /usr/local/src/ /dlv
+COPY --from=builder /usr/local/src/app /app
+COPY configs/apiserver/config.yaml /config.yaml
+
+ENTRYPOINT ["/dlv"]

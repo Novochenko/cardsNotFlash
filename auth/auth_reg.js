@@ -16,7 +16,7 @@ registerButton.addEventListener('click', (e) => {
   };
 
   // Отправляем запрос на сервер
-  fetch("http://26.229.38.10:9000/users", {
+  fetch("https://127.0.0.1:9000/users", {
     method: 'POST',
     //mode: 'no-cors',
     headers: {
