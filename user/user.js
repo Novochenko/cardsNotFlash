@@ -4,13 +4,21 @@ const avatar = document.getElementById('avatar');
 const username = document.getElementById('username');
 
 // Отправляем запрос на сервер для получения аватарки
-fetch('/get-avatar.php'/* Вставить нужное название файла */, {
+fetch('http://127.0.0.1:9000/private/whoami/', {
   method: 'GET',
   headers: {
     'Content-Type': 'application/json'
   }
 })
-.then((response) => response.json())
+.then((response) => {
+  if (response.ok){
+    console.log('user ok');
+    // ...
+  }
+  else{
+    console.log('user error');
+  }
+  return response.json()})
 .then((data) => {
   if (data.success) {
     // Обновляем аватарку и имя пользователя
