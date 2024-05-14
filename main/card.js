@@ -4,15 +4,24 @@ const questionSetsJSON = [test, test2];
 
 fetch('http://26.229.38.10:9000/private/showusingtime', {
     method: 'GET',
+    credentials: 'include',
     headers:{
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    'Cookie': localStorage.getItem('session')
     }
 })
-  .then(response => response.json())
+  .then(response => {
+    if (response.ok){
+        console.log(data);
+    }
+    else{
+        console.error('Error:');
+    }
+   return response.json()})
   .then(data => {
     console.log(data); // массив объектов со свойствами id, userId, frontSide, backSide
     data.forEach(item => {
-      console.log(`ID: ${item.id}, UserID: ${item.user_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
+      return console.log(`ID: ${item.id}, UserID: ${item.user_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
     });
   })
   .catch(error => console.error('Error:', error));

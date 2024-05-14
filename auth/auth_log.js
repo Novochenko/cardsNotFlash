@@ -15,7 +15,9 @@ const responseLogin = document.getElementById('login-response');
     };
   
     // Отправляем запрос на сервер
-    fetch("https://127.0.0.1:9000/sessions", {
+
+    fetch("http://26.229.38.10:9000/sessions", {
+      credentials: 'include',
       method: 'POST',
       headers: {
         "Content-Type": "application/json"
@@ -25,8 +27,10 @@ const responseLogin = document.getElementById('login-response');
     .then((response) =>
     {
       if (response.ok){
+        //const cookie = sessionStorage.getItem('session', session)
         console.log('ok')
-        window.location.href= "../main/main.html"
+        //console.log(cookie)
+        //window.location.href= "../main/main.html"
       }
       else{
         console.log('error')
