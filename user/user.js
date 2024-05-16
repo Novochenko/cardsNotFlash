@@ -4,7 +4,7 @@ const avatar = document.getElementById('avatar');
 const username = document.getElementById('username');
 
 // Отправляем запрос на сервер для получения аватарки
-fetch('http://127.0.0.1:9000/private/whoami/', {
+fetch('http://127.0.0.1:443/private/whoami/', {
   method: 'GET',
   headers: {
     'Content-Type': 'application/json'

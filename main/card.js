@@ -2,7 +2,7 @@
 // index 0 will be chosen as default on page load
 const questionSetsJSON = [test, test2];
 
-fetch('https://26.229.38.10:443/private/showusingtime', {
+fetch('https://127.0.0.1:443/private/showusingtime', {
     method: 'GET',
     credentials: 'include',
     headers:{

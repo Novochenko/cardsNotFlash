@@ -1,8 +1,8 @@
 localhost_mode: true
 bind_addr: ":443"
 log_level: "error"
-cert_pem: "D:/User/smth/go/goProjects/flesh-cards-backup/ca/root_ca.crt"
-key_pem: "D:/User/smth/go/goProjects/flesh-cards-backup/ca/root_ca.key"
+cert_pem: "D:/User/smth/go/goProjects/flesh-cards-backup/security/cert.pem"
+key_pem: "D:/User/smth/go/goProjects/flesh-cards-backup/security/cert.key"
 database_url:
   meow: $DATABASE_FULLNAME
   fullname: "root:shlyapa228123@tcp(localhost:3306)/userdb?parseTime=true"

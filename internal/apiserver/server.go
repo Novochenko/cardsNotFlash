@@ -68,22 +68,23 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
-	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"http://127.0.0.1:5500"}), // тут воровская звезда
-		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
-		handlers.AllowedHeaders([]string{"Content-Type", "Accept", "Origin", "X-Request-ID" /*, "Set-Cookie", "Cookie"*/}),
+	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"https://127.0.0.1:10443", "https://localhost:10443"}), // тут воровская звезда
+		handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "HEAD", "PUT"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Accept", "Origin", "X-Request-ID", "Allow", "Set-Cookie"}),
 		handlers.AllowCredentials(),
 	))
+	s.router.StrictSlash(true)
 	s.router.Use(s.setRequestID)
 	s.router.Use(s.logReqeust)
-	s.router.HandleFunc("/users", s.HandleUsersCreate()).Methods("POST", http.MethodOptions)
-	s.router.HandleFunc("/sessions", s.HandleSessionsCreate()).Methods("POST", http.MethodOptions)
+	s.router.HandleFunc("/users", s.HandleUsersCreate()).Methods(http.MethodPost, http.MethodOptions, http.MethodHead, http.MethodGet)
+	s.router.HandleFunc("/sessions", s.HandleSessionsCreate()).Methods(http.MethodPost, http.MethodOptions, http.MethodHead, http.MethodGet)
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/show", s.HandleShow()).Methods(http.MethodGet)
-	private.HandleFunc("/createcard", s.HandleCardCreate()).Methods("POST", http.MethodOptions)
+	private.HandleFunc("/createcard", s.HandleCardCreate()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/deletecard", s.HandleDeleteCard()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/editcard", s.HandleCardEdit()).Methods(http.MethodPost, http.MethodOptions)
-	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET", http.MethodOptions)
+	private.HandleFunc("/whoami", s.handleWhoami()).Methods(http.MethodGet, http.MethodOptions)
 	private.HandleFunc("/showusingtime", s.HandleCardsShowUsingTime()).Methods(http.MethodGet, http.MethodOptions)
 	private.HandleFunc("/updatecardflag", s.HandleCardFlagUp()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/sessionquit", s.SessionsQuit()).Methods(http.MethodGet, http.MethodOptions)
@@ -251,7 +252,8 @@ func (s *server) HandleSessionsCreate() http.HandlerFunc {
 			return
 		}
 		session.Options.Path = "/private"
-		session.Options.SameSite = http.SameSiteNoneMode
+		session.Options.SameSite = http.SameSiteStrictMode
+		//session.Options.Secure = true
 		session.Options.HttpOnly = true
 		// session.Options.Secure = true
 		session.Values["user_id"] = u.ID
