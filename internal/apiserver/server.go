@@ -68,9 +68,9 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) configureRouter() {
-	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"https://127.0.0.1:10443", "https://localhost:10443"}), // тут воровская звезда
+	s.router.Use(handlers.CORS(handlers.AllowedOrigins([]string{"https://localhost:10443"}), // тут воровская звезда
 		handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "HEAD", "PUT"}),
-		handlers.AllowedHeaders([]string{"Content-Type", "Accept", "Origin", "X-Request-ID", "Allow", "Set-Cookie"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Accept", "Origin", "X-Request-ID", "Allow", "Set-Cookie", "Cookie"}),
 		handlers.AllowCredentials(),
 	))
 	s.router.StrictSlash(true)
@@ -253,16 +253,15 @@ func (s *server) HandleSessionsCreate() http.HandlerFunc {
 		}
 		session.Options.Path = "/private"
 		session.Options.SameSite = http.SameSiteStrictMode
-		//session.Options.Secure = true
+		session.Options.Secure = true
 		session.Options.HttpOnly = true
-		// session.Options.Secure = true
 		session.Values["user_id"] = u.ID
 		if err := s.sessionStore.Save(r, w, session); err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
 
-		s.respond(w, r, http.StatusOK, nil)
+		//s.respond(w, r, http.StatusOK, nil)
 
 	}
 }

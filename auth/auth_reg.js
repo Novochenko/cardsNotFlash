@@ -16,7 +16,7 @@ registerButton.addEventListener('click', (e) => {
   };
 
   // Отправляем запрос на сервер
-  fetch("https://127.0.0.1:443/users", {
+  fetch("https://localhost:443/users", {
     method: 'POST',
     //mode: 'no-cors',
     headers: {

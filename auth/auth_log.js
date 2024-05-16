@@ -15,7 +15,7 @@ const responseLogin = document.getElementById('login-response');
     };
   
     // Отправляем запрос на сервер
-    fetch("https://127.0.0.1:443/sessions", {
+    fetch("https://localhost:443/sessions", {
       credentials: 'include',
       method: 'POST',
       headers: {
