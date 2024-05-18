@@ -425,7 +425,7 @@ func (s *server) HandleUsersCreate() http.HandlerFunc {
 			return
 		}
 		ulk.UserID = u.ID
-		if err := s.store.UserLK().Create(ulk); err != nil {
+		if err := s.store.UserLK().Create(ulk, u); err != nil {
 			if err = s.store.User().Delete(u.ID); err != nil {
 				s.error(w, r, http.StatusInternalServerError, err)
 				return

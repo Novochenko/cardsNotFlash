@@ -1,0 +1,19 @@
+localhost_mode: true
+bind_addr: ":443"
+log_level: "error"
+cert_pem: "C:/Users/Alex/Desktop/cardsNotFlesh/security/cert.pem"
+key_pem: "C:/Users/Alex/Desktop/cardsNotFlesh/security/cert.key"
+database_url:
+  meow: $DATABASE_FULLNAME
+  fullname: "root:password@tcp(localhost:3306)/userdb?parseTime=true"
+  port: "3306"
+  host: mysql
+  user: root
+  #user: user
+  # password: shlyapa228123
+  password: root
+  db_name: userdb
+redis_url: 
+  localhost: localhost:6379
+  docker: redis:6379
+session_key: "8109612acafb4ae0ff34f5f1fa549577f4ca3a4a294f559498c111cc7d92973e5dde4eb64f086b49e063708705338f29b662047c09c850f5bb21da65f37036b4"

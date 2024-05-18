@@ -9,18 +9,18 @@ type UsersLKRepository struct {
 	store *Store
 }
 
-func (ulk *UsersLKRepository) Create(lk *model.UserLK) error {
+func (ulk *UsersLKRepository) Create(lk *model.UserLK, u *model.User) error {
 	if err := lk.Validate(); err != nil {
 		return err
 	}
 	// if err := ulk.FindByNickname(lk.Nickname); err != nil {
 	// 	return err
 	// }
-	stmt, err := ulk.store.db.Prepare("INSERT lk (user_id, nickname) VALUES (?, ?)")
+	stmt, err := ulk.store.db.Prepare("INSERT lk (user_id, nickname, email, encrypted_password) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}
-	res, err := stmt.Exec(lk.UserID, lk.Nickname)
+	res, err := stmt.Exec(lk.UserID, lk.Nickname, u.Email, u.EncryptedPassword)
 	if err != nil {
 		return err
 	}

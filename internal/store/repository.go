@@ -19,6 +19,6 @@ type CardsRepository interface {
 }
 
 type UsersLKRepository interface {
-	Create(*model.UserLK) error
+	Create(*model.UserLK, *model.User) error
 	FindByNickname(nick string) error
 }

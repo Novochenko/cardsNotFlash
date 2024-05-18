@@ -7,7 +7,7 @@ fetch('https://localhost:443/private/showusingtime', {
     credentials: 'include',
     headers:{
     'Content-Type': 'application/json',
-    'Cookie': localStorage.getItem('session')
+    //'Cookie': localStorage.getItem('session')
     }
 })
   .then(response => {

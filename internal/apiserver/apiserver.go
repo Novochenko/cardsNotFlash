@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"time"
 
 	"github.com/go-redis/redis"
 	"github.com/rbcervilla/redisstore"
@@ -25,21 +24,6 @@ func Start(config *Config) error {
 	}
 	//sessionStore = sessions.NewCookieStore([]byte(config.SessionKey))
 	s := newServer(store, config, sessionStore)
-	srv := &http.Server{
-		Addr:         config.BindAddr,
-		Handler:      s.router,
-		WriteTimeout: time.Second * 5,
-		ReadTimeout:  time.Second * 5,
-		// TLSConfig: &tls.Config{
-		// 	Certificates: []tls.Certificate{
-		// 		{
-		// 			Certificate: []byte("localhost.crt"),
-		// 			PrivateKey:  []byte("localhost.key"),
-		// 		},
-		// 	},
-		// },
-	}
-	_ = srv
 
 	return http.ListenAndServeTLS(config.BindAddr, config.CertPem, config.KeyPem, s)
 	// return http.ListenAndServeTLS(config.BindAddr, config.CertPem, config.KeyPem, s)

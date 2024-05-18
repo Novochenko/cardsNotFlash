@@ -1,10 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Montserrat', sans-serif;
-}
+
 
 body {
     font-family: 'Montserrat', sans-serif;
@@ -213,4 +208,14 @@ button.wrong {
 #next {
     grid-area: next;
     text-align: center;
+}
+
+.margin{
+    width: 100%;
+    max-width: 240px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    position: relative;
 }

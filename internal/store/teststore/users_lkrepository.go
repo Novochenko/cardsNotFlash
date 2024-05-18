@@ -6,7 +6,7 @@ type UsersLKRepository struct {
 	store *Store
 }
 
-func (ulk *UsersLKRepository) Create(lk *model.UserLK) error {
+func (ulk *UsersLKRepository) Create(lk *model.UserLK, u *model.User) error {
 	return nil
 }
 func (ulk *UsersLKRepository) FindByNickname(nick string) error {
