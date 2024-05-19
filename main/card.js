@@ -7,19 +7,19 @@ fetch('https://localhost:443/private/showusingtime', {
     credentials: 'include',
     headers:{
     'Content-Type': 'application/json',
-    //'Cookie': localStorage.getItem('session')
     }
 })
   .then(response => {
     if (response.ok){
-        console.log(data);
+        console.log("gooposd");
     }
     else{
         console.error('Error:');
     }
    return response.json()})
   .then(data => {
-    console.log(data); // массив объектов со свойствами id, userId, frontSide, backSide
+    const cardDeckOptions= data;
+    console.log(cardDeckOptions);
     data.forEach(item => {
       return console.log(`ID: ${item.id}, UserID: ${item.user_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
     });
@@ -46,10 +46,6 @@ let wrongBUTTON = document.querySelector(".wrong");
 let reloadBUTTON = document.querySelector(".reload");
 let returnBUTTON = document.querySelector(".return");
 // card-deck-choice-fields
-const cardDeckOptions = [
-    "test",
-    "test2"
-];
 
 // Текст под карточкой
 let remainingCards = document.querySelector(".remaining");
@@ -78,11 +74,11 @@ deckOptions.addEventListener("change", (e) => {
     newCard();
     });
 
-// повернуть сторону ответа на вопрос
+// повернуть сторону back_sideа на front_side
 returnBUTTON.addEventListener("click", () => card.classList.remove("flipped"));
 
 
-// взять рандомную пару (вопрос/ответ) из всех
+// взять рандомную пару (front_side/back_side) из всех
 function getQuestionPair(dict) {
     let rand = Math.floor(Math.random() * dict.length);
     return Object.entries(dict)[rand][1];
@@ -111,7 +107,7 @@ function displayQuestion(rP) {
     // turn card to front-side
     card.classList.remove("flipped");
     // write question on front-side of the card
-    question.innerHTML = rP["Вопрос"];
+    question.innerHTML = rP["front_side"];
     // add hidden to the last answer, so the card-size rescales down (to question-size)
     solution.classList.add("hidden");
 
@@ -145,13 +141,13 @@ function flipBackAndDisplayAnswer() {
     let answer = document.querySelector(".answer");
     if (randomPair["input"]) {
         answer = answer.value;
-        if (answer == randomPair["Ответ"]) solution.innerHTML = "Правильно!";
-        else solution.innerHTML = `К сожалению нет.<br>Правильный ответ был <em>"${randomPair["Ответ"]}"</em>.`;
+        if (answer == randomPair["back_side"]) solution.innerHTML = "Правильно!";
+        else solution.innerHTML = `К сожалению нет.<br>Правильный ответ был <em>"${randomPair["back_side"]}"</em>.`;
     } else {
         // create List of possible multiple-answer
-        let answerList = splitPhraseIfSeveralNumbers(randomPair["Ответ"]);
+        let answerList = splitPhraseIfSeveralNumbers(randomPair["back_side"]);
         // if it is just one answer display it
-        if (typeof answerList == "string") solution.innerHTML = randomPair["Ответ"];
+        if (typeof answerList == "string") solution.innerHTML = randomPair["back_side"];
         // if muslitple answers display them as a list
         else {
             solution.innerHTML = "";
@@ -187,7 +183,7 @@ function newCard() {
 
 // removes current randomPair of question Answer from global questionSet-Array of objects
 function removeCardFromSet(correct) {
-    let idx = questionSet.findIndex(qa => qa["Вопрос"] == randomPair["Вопрос"]);
+    let idx = questionSet.findIndex(qa => qa["front_side"] == randomPair["front_side"]);
     let card = questionSet[idx];
     if (correct) {
         questionSet.splice(idx, 1);
