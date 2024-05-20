@@ -289,7 +289,11 @@ func (s *server) HandleGroupEdit() http.HandlerFunc {
 	}
 }
 func (s *server) HandleGroupShow() http.HandlerFunc {
+	type request struct {
+		GroupID int64 `json:"group_id"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
 		session, err := s.sessionStore.Get(r, sessionKeyName)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
@@ -301,7 +305,8 @@ func (s *server) HandleGroupShow() http.HandlerFunc {
 			return
 		}
 		group := &model.Group{
-			UserID: id.(int64),
+			UserID:  id.(int64),
+			GroupID: req.GroupID,
 		}
 		cards, err := s.store.Group().Show(group)
 		if err != nil {
