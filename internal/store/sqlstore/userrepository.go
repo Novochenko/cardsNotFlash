@@ -21,7 +21,7 @@ func (ur *UserRepository) ShowALLGroups(u *model.User) ([]*model.Group, error) {
 	}
 	for rows.Next() {
 		g := &model.Group{}
-		rows.Scan(g.GroupID, g.GroupName)
+		rows.Scan(&g.GroupID, &g.GroupName)
 		groups = append(groups, g)
 	}
 	return groups, nil
