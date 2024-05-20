@@ -294,6 +294,10 @@ func (s *server) HandleGroupShow() http.HandlerFunc {
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
 		session, err := s.sessionStore.Get(r, sessionKeyName)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)

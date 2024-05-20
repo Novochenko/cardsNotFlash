@@ -43,7 +43,7 @@ func (gr *GroupRepository) Delete(g *model.Group) error {
 }
 func (gr *GroupRepository) Show(g *model.Group) ([]*model.Card, error) {
 	cards := []*model.Card{}
-	rows, err := gr.store.db.Query("SELECT card_id, user_id, front_side, back_side, card_time, time_flag FROM cards WHERE user_id = ? AND group_id =?;", g.UserID, g.GroupID)
+	rows, err := gr.store.db.Query("SELECT card_id, user_id, front_side, back_side, card_time, time_flag FROM cards WHERE user_id = ? AND group_id = ?;", g.UserID, g.GroupID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return cards, store.ErrRecordNotFound
