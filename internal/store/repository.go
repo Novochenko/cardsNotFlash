@@ -29,4 +29,5 @@ type GroupRepository interface {
 	Delete(*model.Group) error
 	Show(*model.Group) ([]*model.Card, error)
 	Edit(*model.Group) error
+	ShowUsingTime(g *model.Group) ([]*model.Card, error)
 }

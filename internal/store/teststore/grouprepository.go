@@ -19,3 +19,6 @@ func (gr *GroupRepository) Show(g *model.Group) ([]*model.Card, error) {
 func (gr *GroupRepository) Edit(g *model.Group) error {
 	return nil
 }
+func (gr *GroupRepository) ShowUsingTime(g *model.Group) ([]*model.Card, error) {
+	return nil, nil
+}

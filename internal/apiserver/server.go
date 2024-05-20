@@ -93,6 +93,7 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/groupdelete", s.HandleGroupDelete()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/groupshow", s.HandleGroupShow()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/showallgroups", s.HandleShowAllGroups()).Methods(http.MethodGet, http.MethodOptions)
+	private.HandleFunc("/showgroupusingtime", s.HandleGroupShowUsingTime()).Methods(http.MethodPost, http.MethodOptions)
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
@@ -177,13 +178,52 @@ func (s *server) HandleCardsShowUsingTime() http.HandlerFunc {
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		//w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(cards); err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
 	}
 }
+
+func (s *server) HandleGroupShowUsingTime() http.HandlerFunc {
+	type request struct {
+		GroupID int64 `json:"group_id"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+		session, err := s.sessionStore.Get(r, sessionKeyName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		id, ok := session.Values["user_id"]
+		if !ok {
+			s.error(w, r, http.StatusUnauthorized, err)
+			return
+		}
+		g := &model.Group{
+			UserID:  id.(int64),
+			GroupID: req.GroupID,
+		}
+		cards, err := s.store.Group().ShowUsingTime(g)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(cards); err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+
+	}
+}
+
 func (s *server) SessionsQuit() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := s.sessionStore.Get(r, sessionKeyName)

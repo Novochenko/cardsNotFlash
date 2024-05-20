@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"firstRestAPI/internal/model"
 	"firstRestAPI/internal/store"
+	"time"
 )
 
 type GroupRepository struct {
@@ -55,6 +56,32 @@ func (gr *GroupRepository) Show(g *model.Group) ([]*model.Card, error) {
 		if err := rows.Scan(&scans.ID, &scans.UserID, &scans.FrontSide, &scans.BackSide, &scans.CardTime, &scans.TimeFlag); err != nil {
 			return nil, err
 		}
+		cards = append(cards, scans)
+	}
+	if len(cards) == 0 {
+		return cards, store.ErrRecordNotFound
+	}
+	return cards, nil
+}
+func (gr *GroupRepository) ShowUsingTime(g *model.Group) ([]*model.Card, error) {
+	cards := []*model.Card{}
+	rows, err := gr.store.db.Query(`SELECT card_id, front_side, back_side, time_flag, card_time, time_flag
+									FROM cards
+								 	WHERE user_id = ? AND group_id = ? AND TIMEDIFF(NOW(), card_time) > time_flag;
+								 `, g.UserID, g.GroupID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return cards, store.ErrRecordNotFound
+		}
+		return cards, err
+	}
+	for rows.Next() {
+		scans := &model.Card{}
+		var ct time.Time
+		if err := rows.Scan(&scans.ID, &scans.FrontSide, &scans.BackSide, &scans.TimeFlag, &ct, &scans.TimeFlagString); err != nil {
+			return nil, err
+		}
+		scans.CardTime = ct
 		cards = append(cards, scans)
 	}
 	if len(cards) == 0 {
