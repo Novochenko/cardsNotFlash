@@ -223,6 +223,7 @@ func (s *server) HandleGroupCreate() http.HandlerFunc {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}
+		s.respond(w, r, 200, group.GroupID)
 	}
 }
 func (s *server) HandleGroupDelete() http.HandlerFunc {
