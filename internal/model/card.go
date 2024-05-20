@@ -24,6 +24,7 @@ type Card struct {
 	CardTime       time.Time `json:"card_time"`
 	TimeFlag       rawTime   //`json:"time_flag"`
 	TimeFlagString string    `json:"time_flag_string"`
+	GroupID        int64     `json:"group_id"`
 }
 
 func (c *Card) Validate() error {
@@ -31,7 +32,7 @@ func (c *Card) Validate() error {
 		c,
 		validation.Field(&c.FrontSide, validation.Required),
 		validation.Field(&c.BackSide, validation.Required),
-		//validation.Field(&c.UserID, validation.Required),
+		validation.Field(&c.GroupID, validation.Required),
 	)
 }
 

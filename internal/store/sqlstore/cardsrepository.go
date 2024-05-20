@@ -38,11 +38,11 @@ func (cr *CardRepository) Create(c *model.Card) error {
 	if err := c.Validate(); err != nil {
 		return err
 	}
-	stmt, err := cr.store.db.Prepare("INSERT cards (user_id, front_side, back_side, card_time, time_flag) VALUES(?, ?, ?, CURRENT_TIMESTAMP(), ?);")
+	stmt, err := cr.store.db.Prepare("INSERT cards (user_id, front_side, back_side, card_time, time_flag, group_id) VALUES(?, ?, ?, CURRENT_TIMESTAMP(), ?, ?);")
 	if err != nil {
 		return err
 	}
-	res, err := stmt.Exec(c.UserID, c.FrontSide, c.BackSide, Start)
+	res, err := stmt.Exec(c.UserID, c.FrontSide, c.BackSide, Start, c.GroupID)
 	if err != nil {
 		return err
 	}

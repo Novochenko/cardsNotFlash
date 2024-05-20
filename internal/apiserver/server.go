@@ -88,6 +88,10 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/showusingtime", s.HandleCardsShowUsingTime()).Methods(http.MethodGet, http.MethodOptions)
 	private.HandleFunc("/updatecardflag", s.HandleCardFlagUp()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/sessionquit", s.SessionsQuit()).Methods(http.MethodGet, http.MethodOptions)
+	private.HandleFunc("/groupcreate", s.HandleGroupCreate()).Methods(http.MethodPost, http.MethodOptions)
+	private.HandleFunc("/groupedit", s.HandleGroupEdit()).Methods(http.MethodPost, http.MethodOptions)
+	private.HandleFunc("/groupdelete", s.HandleGroupDelete()).Methods(http.MethodPost, http.MethodOptions)
+	private.HandleFunc("/groupshow", s.HandleGroupShow()).Methods(http.MethodGet, http.MethodOptions)
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
@@ -191,6 +195,126 @@ func (s *server) SessionsQuit() http.HandlerFunc {
 		w.WriteHeader(200)
 	}
 }
+func (s *server) HandleGroupCreate() http.HandlerFunc {
+	type request struct {
+		GroupName string `json:"group_name"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+		session, err := s.sessionStore.Get(r, sessionKeyName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		id, ok := session.Values["user_id"]
+		if !ok {
+			s.error(w, r, http.StatusUnauthorized, err)
+			return
+		}
+		group := &model.Group{
+			UserID:    id.(int64),
+			GroupName: req.GroupName,
+		}
+		if err := s.store.Group().Create(group); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+	}
+}
+func (s *server) HandleGroupDelete() http.HandlerFunc {
+	type request struct {
+		GroupID int64 `json:"group_id"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+		session, err := s.sessionStore.Get(r, sessionKeyName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		id, ok := session.Values["user_id"]
+		if !ok {
+			s.error(w, r, http.StatusUnauthorized, err)
+			return
+		}
+		group := &model.Group{
+			UserID:  id.(int64),
+			GroupID: req.GroupID,
+		}
+		if err := s.store.Group().Delete(group); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+	}
+}
+func (s *server) HandleGroupEdit() http.HandlerFunc {
+	type request struct {
+		GroupID   int64  `json:"group_id"`
+		GroupName string `json:"group_name"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+		session, err := s.sessionStore.Get(r, sessionKeyName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		id, ok := session.Values["user_id"]
+		if !ok {
+			s.error(w, r, http.StatusUnauthorized, err)
+			return
+		}
+		group := &model.Group{
+			UserID:    id.(int64),
+			GroupID:   req.GroupID,
+			GroupName: req.GroupName,
+		}
+		if err := s.store.Group().Edit(group); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+	}
+}
+func (s *server) HandleGroupShow() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, err := s.sessionStore.Get(r, sessionKeyName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		id, ok := session.Values["user_id"]
+		if !ok {
+			s.error(w, r, http.StatusUnauthorized, errNotAuthenticated)
+			return
+		}
+		group := &model.Group{
+			UserID: id.(int64),
+		}
+		cards, err := s.store.Group().Show(group)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(cards); err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+	}
+}
 
 func (s *server) HandleCardEdit() http.HandlerFunc {
 	type request struct {
@@ -270,6 +394,7 @@ func (s *server) HandleCardCreate() http.HandlerFunc {
 	type request struct {
 		FrontSide string `json:"front_side"`
 		BackSide  string `json:"back_side"`
+		GroupID   int64  `json:"group_id"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
@@ -292,12 +417,12 @@ func (s *server) HandleCardCreate() http.HandlerFunc {
 			UserID:    id.(int64),
 			FrontSide: req.FrontSide,
 			BackSide:  req.BackSide,
+			GroupID:   req.GroupID,
 		}
 		if err := s.store.Card().Create(card); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}
-		s.respond(w, r, http.StatusOK, nil)
 	}
 }
 

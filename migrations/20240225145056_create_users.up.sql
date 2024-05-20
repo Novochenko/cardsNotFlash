@@ -10,7 +10,9 @@ create table cards (
     back_side varchar(300),
     card_time timestamp,
     time_flag time,
-    foreign key (user_id) references users(user_id) on delete cascade
+    group_id int,
+    foreign key (user_id) references users(user_id) on delete cascade,
+    foreign key (group_id) references card_groups(group_id) on delete cascade
 );
 
 create table lk(
@@ -22,4 +24,11 @@ create table lk(
     user_description VARCHAR(60),
     encrypted_password VARCHAR(60) NOT NULL,
     Foreign Key (user_id) REFERENCES users(user_id) on delete cascade
+);
+
+create table card_groups(
+	group_id int primary key auto_increment,
+    user_id int,
+    group_name varchar(60),
+    foreign key (user_id) references users(user_id) on delete cascade
 );
