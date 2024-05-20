@@ -91,7 +91,7 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/groupcreate", s.HandleGroupCreate()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/groupedit", s.HandleGroupEdit()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/groupdelete", s.HandleGroupDelete()).Methods(http.MethodPost, http.MethodOptions)
-	private.HandleFunc("/groupshow", s.HandleGroupShow()).Methods(http.MethodGet, http.MethodOptions)
+	private.HandleFunc("/groupshow", s.HandleGroupShow()).Methods(http.MethodPost, http.MethodOptions)
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
