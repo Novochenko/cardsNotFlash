@@ -117,8 +117,8 @@ func (cr *CardRepository) ShowUsingTime(c *model.Card) ([]*model.Card, error) {
 	cards := []*model.Card{}
 	rows, err := cr.store.db.Query(`SELECT card_id, front_side, back_side, time_flag, card_time, time_flag
 									FROM cards
-								 	WHERE user_id = ? AND group_id = ? AND TIMEDIFF(NOW(), card_time) > time_flag;
-								 `, c.UserID, c.GroupID)
+								 	WHERE user_id = ? AND TIMEDIFF(NOW(), card_time) > time_flag;
+								 `, c.UserID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return cards, store.ErrRecordNotFound

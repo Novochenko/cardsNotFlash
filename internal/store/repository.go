@@ -7,6 +7,7 @@ type UserRepository interface {
 	Find(int64) (*model.User, error)
 	FindByEmail(string) (*model.User, error)
 	Delete(id int64) error
+	ShowALLGroups(u *model.User) ([]*model.Group, error)
 }
 
 type CardsRepository interface {

@@ -10,6 +10,10 @@ type UserRepository struct {
 	users map[int64]*model.User
 }
 
+func (ur *UserRepository) ShowALLGroups(u *model.User) ([]*model.Group, error) {
+	return nil, nil
+}
+
 func (ur *UserRepository) Create(u *model.User) error {
 	if err := u.Validate(); err != nil {
 		return err

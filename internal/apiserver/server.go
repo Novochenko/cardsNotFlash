@@ -85,13 +85,14 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/deletecard", s.HandleDeleteCard()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/editcard", s.HandleCardEdit()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/whoami", s.handleWhoami()).Methods(http.MethodGet, http.MethodOptions)
-	private.HandleFunc("/showusingtime", s.HandleCardsShowUsingTime()).Methods(http.MethodPost, http.MethodOptions)
+	private.HandleFunc("/showusingtime", s.HandleCardsShowUsingTime()).Methods(http.MethodGet, http.MethodOptions)
 	private.HandleFunc("/updatecardflag", s.HandleCardFlagUp()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/sessionquit", s.SessionsQuit()).Methods(http.MethodGet, http.MethodOptions)
 	private.HandleFunc("/groupcreate", s.HandleGroupCreate()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/groupedit", s.HandleGroupEdit()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/groupdelete", s.HandleGroupDelete()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/groupshow", s.HandleGroupShow()).Methods(http.MethodPost, http.MethodOptions)
+	private.HandleFunc("/showallgroups", s.HandleShowAllGroups()).Methods(http.MethodGet, http.MethodOptions)
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
@@ -156,15 +157,7 @@ func (s *server) HandleCardFlagUp() http.HandlerFunc {
 }
 
 func (s *server) HandleCardsShowUsingTime() http.HandlerFunc {
-	type request struct {
-		GroupID int64 `json:"group_id"`
-	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		req := &request{}
-		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			s.error(w, r, http.StatusBadRequest, err)
-			return
-		}
 		session, err := s.sessionStore.Get(r, sessionKeyName)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
@@ -176,8 +169,7 @@ func (s *server) HandleCardsShowUsingTime() http.HandlerFunc {
 			return
 		}
 		card := &model.Card{
-			UserID:  id.(int64),
-			GroupID: req.GroupID,
+			UserID: id.(int64),
 		}
 		cards, err := s.store.Card().ShowUsingTime(card)
 		if err != nil {
@@ -476,7 +468,33 @@ func (s *server) HandleDeleteCard() http.HandlerFunc {
 		s.respond(w, r, http.StatusOK, nil)
 	}
 }
-
+func (s *server) HandleShowAllGroups() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, err := s.sessionStore.Get(r, sessionKeyName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		id, ok := session.Values["user_id"]
+		if !ok {
+			s.error(w, r, http.StatusUnauthorized, errNotAuthenticated)
+			return
+		}
+		u := &model.User{
+			ID: id.(int64),
+		}
+		groups, err := s.store.User().ShowALLGroups(u)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(groups); err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+	}
+}
 func (s *server) HandleShow() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := s.sessionStore.Get(r, sessionKeyName)

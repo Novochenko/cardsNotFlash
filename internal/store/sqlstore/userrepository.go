@@ -10,6 +10,23 @@ type UserRepository struct {
 	store *Store
 }
 
+func (ur *UserRepository) ShowALLGroups(u *model.User) ([]*model.Group, error) {
+	groups := []*model.Group{}
+	rows, err := ur.store.db.Query("SELECT group_id, group_name FROM card_groups WHERE user_id = ?", u.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, store.ErrRecordNotFound
+		}
+		return nil, err
+	}
+	for rows.Next() {
+		g := &model.Group{}
+		rows.Scan(g.GroupID, g.GroupName)
+		groups = append(groups, g)
+	}
+	return groups, nil
+}
+
 func (ur *UserRepository) Create(u *model.User) error {
 	if err := u.EncryptPassword(); err != nil {
 		return err
