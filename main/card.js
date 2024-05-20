@@ -1,6 +1,27 @@
 // load questionSets into scope
 // index 0 will be chosen as default on page load
-const questionSetsJSON = [test, test2];
+//const questionSetsJSON = [test, test2];
+let questionSetsJSON = [];
+/*fetch('https://localhost:443/private/show',{
+    method: 'GET',
+    credentials: 'include',
+    headers:{
+        'Content-Type': 'application/json',
+        }
+    })
+    .then(response => {
+        if (response.ok){
+            console.log("all cards");
+        }
+        else{
+            console.log("all cards:error");
+        }
+    })
+    .then(data => {
+        data.forEach(item =>{
+            return console.log(`ID: ${item.id}, UserID: ${item.user_id}, GroupID: ${item.group_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
+        })
+    })*/
 
 fetch('https://localhost:443/private/showusingtime', {
     method: 'GET',
@@ -21,10 +42,15 @@ fetch('https://localhost:443/private/showusingtime', {
     const cardDeckOptions= data;
     console.log(cardDeckOptions);
     data.forEach(item => {
-      return console.log(`ID: ${item.id}, UserID: ${item.user_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
+        if (!questionSetsJSON.includes(item.group_id)){
+            questionSetsJSON.push(item.group_id);
+        }
+      return console.log(`ID: ${item.id}, UserID: ${item.user_id}, GroupID: ${item.group_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
     });
   })
   .catch(error => console.error('Error:', error));
+
+  //const questionSetsJSON = document.getElementById('group_id');
 
 // ask youser before leaving the page if they really want to
 window.addEventListener("beforeunload", (e) => {

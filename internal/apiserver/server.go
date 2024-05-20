@@ -80,7 +80,7 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/sessions", s.HandleSessionsCreate()).Methods(http.MethodPost, http.MethodOptions, http.MethodHead, http.MethodGet)
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
-	private.HandleFunc("/show", s.HandleShow()).Methods(http.MethodGet)
+	private.HandleFunc("/show", s.HandleShow()).Methods(http.MethodGet, http.MethodOptions)
 	private.HandleFunc("/createcard", s.HandleCardCreate()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/deletecard", s.HandleDeleteCard()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/editcard", s.HandleCardEdit()).Methods(http.MethodPost, http.MethodOptions)
