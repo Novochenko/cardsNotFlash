@@ -22,3 +22,10 @@ type UsersLKRepository interface {
 	Create(*model.UserLK, *model.User) error
 	FindByNickname(nick string) error
 }
+
+type GroupRepository interface {
+	Create(*model.Group) error
+	Delete(*model.Group) error
+	Show(*model.Group) ([]*model.Card, error)
+	Edit(*model.Group) error
+}

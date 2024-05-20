@@ -12,6 +12,7 @@ type Store struct {
 	userRepository    *UserRepository
 	cardRepository    *CardRepository
 	usersLKRepository *UsersLKRepository
+	groupRepository   *GroupRepository
 }
 
 func New(db *sql.DB) *Store {
@@ -48,4 +49,13 @@ func (s *Store) UserLK() store.UsersLKRepository {
 		store: s,
 	}
 	return s.usersLKRepository
+}
+func (s *Store) Group() store.GroupRepository {
+	if s.groupRepository != nil {
+		return s.groupRepository
+	}
+	s.groupRepository = &GroupRepository{
+		store: s,
+	}
+	return s.groupRepository
 }
