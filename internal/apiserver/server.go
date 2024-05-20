@@ -156,7 +156,15 @@ func (s *server) HandleCardFlagUp() http.HandlerFunc {
 }
 
 func (s *server) HandleCardsShowUsingTime() http.HandlerFunc {
+	type request struct {
+		GroupID int64 `json:"group_id"`
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
 		session, err := s.sessionStore.Get(r, sessionKeyName)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
@@ -168,7 +176,8 @@ func (s *server) HandleCardsShowUsingTime() http.HandlerFunc {
 			return
 		}
 		card := &model.Card{
-			UserID: id.(int64),
+			UserID:  id.(int64),
+			GroupID: req.GroupID,
 		}
 		cards, err := s.store.Card().ShowUsingTime(card)
 		if err != nil {
