@@ -85,7 +85,7 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/deletecard", s.HandleDeleteCard()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/editcard", s.HandleCardEdit()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/whoami", s.handleWhoami()).Methods(http.MethodGet, http.MethodOptions)
-	private.HandleFunc("/showusingtime", s.HandleCardsShowUsingTime()).Methods(http.MethodGet, http.MethodOptions)
+	private.HandleFunc("/showusingtime", s.HandleCardsShowUsingTime()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/updatecardflag", s.HandleCardFlagUp()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/sessionquit", s.SessionsQuit()).Methods(http.MethodGet, http.MethodOptions)
 	private.HandleFunc("/groupcreate", s.HandleGroupCreate()).Methods(http.MethodPost, http.MethodOptions)
