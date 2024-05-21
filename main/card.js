@@ -2,53 +2,254 @@
 // index 0 will be chosen as default on page load
 //const questionSetsJSON = [test, test2];
 let questionSetsJSON = [];
-/*fetch('https://localhost:443/private/show',{
-    method: 'GET',
-    credentials: 'include',
-    headers:{
+let userGroups = [];
+// fetch('https://localhost:443/private/show',{
+//     method: 'GET',
+//     credentials: 'include',
+//     headers:{
+//         'Content-Type': 'application/json',
+//         }
+//     })
+//     .then(response => {
+//         if (response.ok){
+//             console.log("all cards");
+//         }
+//         else{
+//             console.log("all cards:error");
+//         }
+//     })
+//     .then(data => {
+//         data.forEach(item =>{
+//             return console.log(`ID: ${item.id}, UserID: ${item.user_id}, GroupID: ${item.group_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
+//         })
+//     })
+const fetchAll = document.getElementById('fetch-cards');
+//const currentGroup = document.getElementById('choose-group');
+
+fetchAll.addEventListener('click', () => {
+        fetch('https://localhost:443/private/showallgroups',{
+            method: 'GET',
+            credentials: 'include',
+            headers:{
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => {
+            if (response.ok){
+                console.log("skopiroval group");
+            }
+            else{
+                console.error('ne skopiroval group:error');
+            }
+        return response.json()})
+           
+        .then(data => {
+            // Создаем опции для select
+            const options = data.map(option => `<option value="${option.group_id}">${option.group_name}</option>`);
+            // Вставляем опции в select
+            document.getElementById('container-list').innerHTML = options.join('');
+            data.forEach(item => {
+                if (!questionSetsJSON.includes(item.group_id)){
+                    questionSetsJSON.map(item => [item.group_id, item.group_name]);
+                    console.log("progon");
+                    userGroups.push(item.group_id);
+                }
+            return console.log(`GroupName: ${item.group_name} GroupID: ${item.group_id}`);
+            });
+          })
+})
+
+function handleSelectChange() {
+    const selectedOption = document.getElementById('container-list').selectedOptions[0];
+    if (selectedOption) {
+      // Получаем значение и текст выбранного элемента
+      const group_id = selectedOption.value;
+      const name = selectedOption.name;
+      // Выполняем дальнейшие действия с выбранным элементом
+      console.log(`Selected option: ${name} (value: ${group_id})`);
+      // Например, можно отправить POST-запрос на сервер с выбранным элементом
+      fetch('https://localhost:443/private/showgroupusingtime', {
+        method: 'POST',
+        credentials: 'include',
+        headers:{
         'Content-Type': 'application/json',
+        },
+        body:{
+            "group_id": group_id
         }
     })
-    .then(response => {
+      .then(response => {
         if (response.ok){
-            console.log("all cards");
+            console.log("gooposd");
         }
         else{
-            console.log("all cards:error");
+            console.error('Error:');
         }
-    })
-    .then(data => {
-        data.forEach(item =>{
-            return console.log(`ID: ${item.id}, UserID: ${item.user_id}, GroupID: ${item.group_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
-        })
-    })*/
+       return response.json()})
+      .then(data => {
 
-fetch('https://localhost:443/private/showusingtime', {
-    method: 'GET',
-    credentials: 'include',
-    headers:{
-    'Content-Type': 'application/json',
+        const cardDeckOptions= data;
+        console.log(cardDeckOptions);
+        data.forEach(item => {
+            
+          return console.log(`ID: ${item.id}, UserID: ${item.user_id}, GroupID: ${item.group_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
+        });
+      })
+      .catch(error => console.error('Error:', error));
     }
-})
-  .then(response => {
-    if (response.ok){
-        console.log("gooposd");
-    }
-    else{
-        console.error('Error:');
-    }
-   return response.json()})
-  .then(data => {
-    const cardDeckOptions= data;
-    console.log(cardDeckOptions);
-    data.forEach(item => {
-        if (!questionSetsJSON.includes(item.group_id)){
-            questionSetsJSON.push(item.group_id);
-        }
-      return console.log(`ID: ${item.id}, UserID: ${item.user_id}, GroupID: ${item.group_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
-    });
-  })
-  .catch(error => console.error('Error:', error));
+  }
+
+
+// currentGroup.addEventListener('click', () =>{
+//     fetch('https://localhost:443/private/showgroupusingtime', {
+//         method: 'POST',
+//         credentials: 'include',
+//         headers:{
+//         'Content-Type': 'application/json',
+//         },
+//         body:{
+//             "group_id": group_id
+//         }
+//     })
+//       .then(response => {
+//         if (response.ok){
+//             console.log("gooposd");
+//         }
+//         else{
+//             console.error('Error:');
+//         }
+//        return response.json()})
+//       .then(data => {
+
+//         const cardDeckOptions= data;
+//         console.log(cardDeckOptions);
+//         data.forEach(item => {
+            
+//           return console.log(`ID: ${item.id}, UserID: ${item.user_id}, GroupID: ${item.group_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
+//         });
+//       })
+//       .catch(error => console.error('Error:', error));
+// })
+
+
+    // async function fetchAll() {
+    //     try {
+    //         await fetch('https://localhost:443/private/showallgroups',{
+    //             method: 'GET',
+    //             credentials: 'include',
+    //             headers:{
+    //                 'Content-Type': 'application/json',
+    //             },
+    //         })
+    //         .then(response => {
+    //             if (response.ok){
+    //                 console.log("skopiroval group");
+    //             }
+    //             else{
+    //                 console.error('ne skopiroval group:error');
+    //             }
+    //            return response.json()})
+               
+    //           .then(data => {
+    //             // const cardDeckOptions= data;
+    //             // console.log(cardDeckOptions);
+    //             data.forEach(item => {
+    //                 // if (!questionSetsJSON.includes(item.group_id)){
+    //                 //     questionSetsJSON.map(item => [item.group_id, item.group_name, item.front_side, item.back_side]);
+    //                 //     console.log("progon");
+    //                 // }
+    //               return console.log(`GroupName: ${item.group_name} GroupID: ${item.group_id}`);
+    //             });
+    //           })
+            
+    //         await fetch('https://localhost:443/private/showusingtime', {
+    //             method: 'POST',
+    //             credentials: 'include',
+    //             headers:{
+    //             'Content-Type': 'application/json',
+    //             },
+    //             body:{
+    //                 "group_id": group_id
+    //             }
+    //         })
+    //           .then(response => {
+    //             if (response.ok){
+    //                 console.log("gooposd");
+    //             }
+    //             else{
+    //                 console.error('Error:');
+    //             }
+    //            return response.json()})
+    //           .then(data => {
+    //             const cardDeckOptions= data;
+    //             console.log(cardDeckOptions);
+    //             data.forEach(item => {
+    //               return console.log(`ID: ${item.id}, UserID: ${item.user_id}, GroupID: ${item.group_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
+    //             });
+    //           })
+    //           .catch(error => console.error('Error:', error));
+    //     } catch (error) {
+    //       console.error(error);
+    //     }
+    //   }
+
+
+// fetch('https://localhost:443/private/showallgroups',{
+//     method: 'GET',
+//     credentials: 'include',
+//     headers:{
+//         'Content-Type': 'application/json',
+//     },
+// })
+// .then(response => {
+//     if (response.ok){
+//         console.log("skopiroval group");
+//     }
+//     else{
+//         console.error('ne skopiroval group:error');
+//     }
+//    return response.json()})
+   
+//   .then(data => {
+//     // const cardDeckOptions= data;
+//     // console.log(cardDeckOptions);
+//     data.forEach(item => {
+//         if (!questionSetsJSON.includes(item.group_id)){
+//             questionSetsJSON.push(item.group_id);
+//         }
+//       return console.log(`GroupName: ${item.group_name} GroupID: ${item.group_id}`);
+//     });
+//   })
+
+// fetch('https://localhost:443/private/showusingtime', {
+//     method: 'POST',
+//     credentials: 'include',
+//     headers:{
+//     'Content-Type': 'application/json',
+//     },
+//     body:{
+//         "group_id": group_id
+//     }
+// })
+//   .then(response => {
+//     if (response.ok){
+//         console.log("gooposd");
+//     }
+//     else{
+//         console.error('Error:');
+//     }
+//    return response.json()})
+//   .then(data => {
+//     const cardDeckOptions= data;
+//     console.log(cardDeckOptions);
+//     data.forEach(item => {
+//         // if (!questionSetsJSON.includes(item.group_id)){
+//         //     questionSetsJSON.push(item.group_id);
+//         // }
+//       return console.log(`ID: ${item.id}, UserID: ${item.user_id}, GroupID: ${item.group_id}, FrontSide: ${item.front_side}, BackSide: ${item.back_side}`);
+//     });
+//   })
+//   .catch(error => console.error('Error:', error));
 
   //const questionSetsJSON = document.getElementById('group_id');
 
@@ -81,7 +282,9 @@ let nextCards = document.querySelector("#next");
 
 // define question-set
 // global questionSet
-let questionSet = questionSetsJSON[0];
+const questionSet = questionSetsJSON[0];
+// console.log(questionSet);
+// console.log(questionSetsJSON[0]);
 let nextRound = [];
 // set a questionSet to start with
 function defineQuestionSet(set) {
