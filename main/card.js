@@ -67,6 +67,7 @@ function handleSelectChange() {
       const name = selectedOption.name;
       // Выполняем дальнейшие действия с выбранным элементом
       console.log(`Selected option: ${name} (value: ${group_id})`);
+      console.log(group_id);
       // Например, можно отправить POST-запрос на сервер с выбранным элементом
       fetch('https://localhost:443/private/showgroupusingtime', {
         method: 'POST',
