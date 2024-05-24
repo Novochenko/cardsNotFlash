@@ -7,9 +7,11 @@ import (
 	"firstRestAPI/internal/model"
 	"firstRestAPI/internal/store"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -192,6 +194,12 @@ func (s *server) HandleGroupShowUsingTime() http.HandlerFunc {
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
+		stroka, err := io.ReadAll(r.Body)
+		if err != nil {
+			slog.Info("Pizdets")
+			return
+		}
+		slog.Info(string(stroka))
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 			s.error(w, r, http.StatusBadRequest, err)
 			return
@@ -233,7 +241,7 @@ func (s *server) SessionsQuit() http.HandlerFunc {
 		}
 		session.Options.MaxAge = 0
 		session.Save(r, w)
-		w.WriteHeader(200)
+		w.WriteHeader(http.StatusOK)
 	}
 }
 func (s *server) HandleGroupCreate() http.HandlerFunc {
@@ -264,7 +272,11 @@ func (s *server) HandleGroupCreate() http.HandlerFunc {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}
-		s.respond(w, r, 200, group.GroupID)
+		w.Header().Set("Content-Type", "application/json")
+		if err = json.NewEncoder(w).Encode(group.GroupID); err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
 	}
 }
 func (s *server) HandleGroupDelete() http.HandlerFunc {
@@ -331,7 +343,7 @@ func (s *server) HandleGroupEdit() http.HandlerFunc {
 }
 func (s *server) HandleGroupShow() http.HandlerFunc {
 	type request struct {
-		GroupID int64 `json:"group_id"`
+		GroupID string `json:"group_id"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
@@ -349,9 +361,14 @@ func (s *server) HandleGroupShow() http.HandlerFunc {
 			s.error(w, r, http.StatusUnauthorized, errNotAuthenticated)
 			return
 		}
+		groupID, err := strconv.ParseInt(req.GroupID, 10, 64)
+		if err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
 		group := &model.Group{
 			UserID:  id.(int64),
-			GroupID: req.GroupID,
+			GroupID: groupID,
 		}
 		cards, err := s.store.Group().Show(group)
 		if err != nil {
@@ -413,14 +430,11 @@ func (s *server) HandleSessionsCreate() http.HandlerFunc {
 			s.error(w, r, http.StatusBadRequest, err)
 			return
 		}
-
 		u, err := s.store.User().FindByEmail(req.Email)
 		if err != nil || !u.ComparePassword(req.Password) {
 			s.error(w, r, http.StatusUnauthorized, errIncorrectEmailOrPassword)
 			return
 		}
-		//sesKey := "someSession"
-		// sessionName должен будет генерироваться через uuid и сохраняться
 		session, err := s.sessionStore.Get(r, sessionKeyName)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
@@ -505,7 +519,7 @@ func (s *server) HandleDeleteCard() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
-		s.respond(w, r, http.StatusOK, nil)
+		//s.respond(w, r, http.StatusOK, nil)
 	}
 }
 func (s *server) HandleShowAllGroups() http.HandlerFunc {
@@ -598,7 +612,6 @@ func (s *server) HandleUsersCreate() http.HandlerFunc {
 		Nickname string `json:"nickname"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		req := &request{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 			s.error(w, r, http.StatusBadRequest, err)

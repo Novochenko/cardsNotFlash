@@ -13,8 +13,8 @@ var (
 )
 
 func init() {
-	// flag.StringVar(&configPath, "config-path", "D:/User/smth/go/goProjects/flesh-cards-backup/configs/apiserver/config.yaml", "path to config file")
-	flag.StringVar(&configPath, "config-path", "C:/Users/Alex/Desktop/cardsNotFlesh/configs/apiserver/config.yaml", "path to config file")
+	flag.StringVar(&configPath, "config-path", "D:/User/smth/go/goProjects/flesh-cards-backup/configs/apiserver/config.yaml", "path to config file")
+	//flag.StringVar(&configPath, "config-path", "C:/Users/Alex/Desktop/cardsNotFlesh/configs/apiserver/config.yaml", "path to config file")
 	//flag.StringVar(&configPath, "config-path", "config.yaml", "path to config file")
 }
 
