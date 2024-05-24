@@ -24,6 +24,7 @@ let userGroups = [];
 //         })
 //     })
 const fetchAll = document.getElementById('fetch-cards');
+const cardshows = document.getElementById('cards-shows');
 //const currentGroup = document.getElementById('choose-group');
 
 fetchAll.addEventListener('click', () => {
@@ -45,14 +46,14 @@ fetchAll.addEventListener('click', () => {
            
         .then(data => {
             // Создаем опции для select
-            const options = data.map(option => `<option value="${option.group_id}">${option.group_name}</option>`);
+            const options = data.map(data => `<option value=${data.group_id}>${data.group_name}</option>`);
             // Вставляем опции в select
-            document.getElementById('container-list').innerHTML = options.join('');
+            document.getElementById('container-list').innerHTML = options.join(' ');
             data.forEach(item => {
                 if (!questionSetsJSON.includes(item.group_id)){
                     questionSetsJSON.map(item => [item.group_id, item.group_name]);
                     console.log("progon");
-                    userGroups.push(item.group_id);
+                    userGroups.map(item => [item.group_id, item.group_name]);
                 }
             return console.log(`GroupName: ${item.group_name} GroupID: ${item.group_id}`);
             });
@@ -64,27 +65,30 @@ function handleSelectChange() {
     if (selectedOption) {
       // Получаем значение и текст выбранного элемента
       const group_id = selectedOption.value;
-      const name = selectedOption.name;
+      const name = selectedOption.group_name;
+
+      const int64 = parseInt (group_id);
       // Выполняем дальнейшие действия с выбранным элементом
       console.log(`Selected option: ${name} (value: ${group_id})`);
-      console.log(group_id);
+      console.log(typeof int64);
+      console.log(selectedOption);
       // Например, можно отправить POST-запрос на сервер с выбранным элементом
       fetch('https://localhost:443/private/showgroupusingtime', {
         method: 'POST',
         credentials: 'include',
         headers:{
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json"
         },
         body:{
-            "group_id": group_id
-        }
+            "group_id": int64
+        }   
     })
       .then(response => {
         if (response.ok){
             console.log("gooposd");
         }
         else{
-            console.error('Error:');
+            console.error("error");
         }
        return response.json()})
       .then(data => {
@@ -255,7 +259,9 @@ function handleSelectChange() {
   //const questionSetsJSON = document.getElementById('group_id');
 
 // ask youser before leaving the page if they really want to
-window.addEventListener("beforeunload", (e) => {
+
+cardshows.addEventListener('click', () =>{
+    window.addEventListener("beforeunload", (e) => {
     e.preventDefault();
     e.returnValue = "";
 });
@@ -440,5 +446,5 @@ correctBUTTON.addEventListener("click", () => {
 });
 
 // reload the page / begin from the beginning
-reloadBUTTON.addEventListener("click", () => location.reload());
-
+reloadBUTTON.addEventListener("click", () => location.reload());}
+)
