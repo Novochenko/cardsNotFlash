@@ -67,7 +67,7 @@ function handleSelectChange() {
       const group_id = selectedOption.value;
       const name = selectedOption.group_name;
 
-      const int64 = parseInt (group_id);
+      //const int64 = parseInt (group_id);
       // Выполняем дальнейшие действия с выбранным элементом
       console.log(`Selected option: ${name} (value: ${group_id})`);
       console.log(typeof int64);
@@ -80,7 +80,7 @@ function handleSelectChange() {
         "Content-Type": "application/json"
         },
         body:{
-            "group_id": int64
+            "group_id": group_id
         }   
     })
       .then(response => {
