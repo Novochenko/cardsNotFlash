@@ -7,7 +7,6 @@ import (
 	"firstRestAPI/internal/model"
 	"firstRestAPI/internal/store"
 	"fmt"
-	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -194,12 +193,12 @@ func (s *server) HandleGroupShowUsingTime() http.HandlerFunc {
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		req := &request{}
-		stroka, err := io.ReadAll(r.Body)
-		if err != nil {
-			slog.Info("Pizdets")
-			return
-		}
-		slog.Info(string(stroka))
+		// stroka, err := io.ReadAll(r.Body)
+		// if err != nil {
+		// 	slog.Info("Pizdets")
+		// 	return
+		// }
+		// slog.Info(string(stroka))
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 			s.error(w, r, http.StatusBadRequest, err)
 			return
