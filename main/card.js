@@ -1,7 +1,7 @@
 // load questionSets into scope
 // index 0 will be chosen as default on page load
 //const questionSetsJSON = [test, test2];
-//let questionSetsJSON = [];
+let questionSetsJSON = [];
 let userGroups = [];
 // fetch('https://localhost:443/private/show',{
 //     method: 'GET',
@@ -82,7 +82,7 @@ function handleSelectChange() {
         "Content-Type": "application/json"
         },
         body: JSON.stringify(userData)
-    })
+        })
       .then(response => {
         if (response.ok){
             console.log("gooposd");
@@ -92,12 +92,11 @@ function handleSelectChange() {
         }
        return response.json()})
       .then(data => {
-        let questionSetsJSON=[];
-        data.forEach(item =>{
-            if (!questionSetsJSON.includes(item.card_id)){
-                questionSetsJSON.map(item => [item.front_side, item.back_side])
-            }
-        })
+        //data.forEach(questionSetsJSON.push(item => [item.front_side, item.back_side]))
+        const cards = data.map(card => ({
+            "front_side": card.front_side,
+            "back_side": card.back_side
+          }));
         const cardshows = document.getElementById('container-list');
 
         cardshows.addEventListener('click', () =>{
@@ -126,12 +125,11 @@ function handleSelectChange() {
         let knownCards = document.querySelector("#known");
         let knownCardsCounter = 0;
         let nextCards = document.querySelector("#next");
-        
+
         // define question-set
         // global questionSet
-        const questionSet = questionSetsJSON[0];
-        // console.log(questionSet);
-        console.log(questionSetsJSON[0], "13-9485713");
+        const questionSet = cards[0];
+        console.log(cards[0], "13-9485713");
         let nextRound = [];
         // set a questionSet to start with
         function defineQuestionSet(set) {
@@ -157,11 +155,11 @@ function handleSelectChange() {
         // взять рандомную пару (front_side/back_side) из всех
         function getQuestionPair(dict) {
             let rand = Math.floor(Math.random() * dict.length);
-            return Object.entries(dict)[rand][1];
+            return Object.entries(dict)[rand][1];   
         }
         
         // innitial randomPair on Page-Load
-        let randomPair = getQuestionPair(questionSet);
+        let randomPair = getQuestionPair(cards);
         
         // display first question
         displayQuestion(randomPair);
@@ -188,7 +186,7 @@ function handleSelectChange() {
             solution.classList.add("hidden");
         
             // display current stack of cards
-            remainingCards.innerHTML = `Есть еще ${questionSet.length} карт в колоде`
+            remainingCards.innerHTML = `Есть еще ${cards.length} карт в колоде`
             knownCards.innerHTML = `Известно на данный момент: ${knownCardsCounter}`; 
             nextCards.innerHTML = `Следующий раунд: ${nextRound.length}`; 
         }
@@ -253,22 +251,22 @@ function handleSelectChange() {
                 nextRound = [];
             }
             // create new randomPair in global scope
-            randomPair = getQuestionPair(questionSet);
+            randomPair = getQuestionPair(cards);
             displayQuestion(randomPair);
         }
         
         // removes current randomPair of question Answer from global questionSet-Array of objects
         function removeCardFromSet(correct) {
-            let idx = questionSet.findIndex(qa => qa["front_side"] == randomPair["front_side"]);
-            let card = questionSet[idx];
+            let idx = cards.findIndex(qa => qa["front_side"] == randomPair["front_side"]);
+            let card = cards[idx];
             if (correct) {
-                questionSet.splice(idx, 1);
+                cards.splice(idx, 1);
                 knownCardsCounter += 1;
             } else {
                 nextRound.push(card);
-                questionSet.splice(idx, 1);
+                cards.splice(idx, 1);
             }
-            if (questionSet.length > 0 || nextRound.length > 0) newCard();
+            if (cards.length > 0 || nextRound.length > 0) newCard();
         }
         
         // attache the show-result function to the button on frontside of card
@@ -288,12 +286,10 @@ function handleSelectChange() {
         // reload the page / begin from the beginning
         reloadBUTTON.addEventListener("click", () => location.reload());}
         )
-      })
-      .catch(error => console.error('Error:', error));
-
+      }
+    )
     }
-  }
-
+}
 
 // cardshows.addEventListener('click', () =>{
 //     window.addEventListener("beforeunload", (e) => {
