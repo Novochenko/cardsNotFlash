@@ -41,11 +41,10 @@
     <div class="mui--appbar-height" style="color: #0288D1" >Создание вопросов и ответов</div>
     <form id="question-form">
       
-      <lable class="lable" for="list">Выберите список:</lable>
-      <select id="groups"></select>
-
-      <input type="text" id="question" name="question" placeholder="Вопрос">
-      <input type="text" id="answer" name="answer" placeholder="Ответ">
+      <lable class="lable" for="list" id="fetch-cards">Выберите список:</lable>
+      <select id="container-list" onchange="selectChange()"></select>
+      <input type="text" id="front-side" name="question" placeholder="Вопрос">
+      <input type="text" id="back-side" name="answer" placeholder="Ответ">
       <button id="add-btn">Отправить</button>
     </form>
     <div id="response"></div>
