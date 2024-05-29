@@ -1,55 +1,24 @@
-// Функция для получения списка JSON файлов из базы данных
-async function getJsonFiles() {
-  try {
-    const response = await fetch('localhost:8080/editcard'); // замените на URL вашей базы данных
-    const data = await response.json();
-    const options = data.map(item => `<option value="${item.id}">${item.question}</option>`);
-    document.getElementById('json-select').innerHTML = options.join('');
-  } catch (error) {
-    console.error(error);
-  }
-}
 
-// Функция для получения выбранного JSON файла
-async function getSelectedJson() {
-  const selectedId = document.getElementById('json-select').value;
-  try {
-    const response = await fetch(`localhost:8080/editcard/${selectedId}`); // замените на URL вашей базы данных
-    const data = await response.json();
-    document.getElementById('json-data').innerHTML = `
-      <p>Вопрос: ${data.question}</p>
-      <p>Ответ: ${data.answer}</p>
+
+
+fetch('https://localhost:443/private/show',{
+  method: "GET",
+  credentials: "include",
+  headers:{
+  "Content-Type": "applicatoin/json"
+  }
+})
+.then(response => response.json())
+.then(data => {
+  const cardsContainer = document.getElementById('cards-container');
+  data.forEach(card => {
+    const cardElement = document.createElement('div');
+    cardElement.innerHTML = `
+      <h2>${card.front_side}</h2>
+      <p>${card.Back_side}</p>
     `;
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-// Функция для редактирования выбранного JSON файла
-async function editJsonData() {
-  const selectedId = document.getElementById('json-select').value;
-  const question = prompt("Введите новый вопрос:");
-  const answer = prompt("Введите новый ответ:");
-  try {
-    const response = await fetch(`localhost:8080/editcard/${selectedId}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ question, answer })
-    }); // замените на URL вашей базы данных
-    if (response.ok) {
-      alert("JSON файл обновлен успешно!");
-    } else {
-      alert("Ошибка обновления JSON файла");
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
-
+    cardsContainer.appendChild(cardElement);
+  });
+});
 // Инициализация
 //getJsonFiles();
-document.getElementById('load-btn').addEventListener('click',getJsonFiles)
-document.getElementById('edit-btn').addEventListener('click', editJsonData);
-document.getElementById('json-select').addEventListener('change', getSelectedJson);

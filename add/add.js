@@ -129,10 +129,11 @@ function selectChange(){
   if (selectedOption) {
     addBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      const group_id = selectedOption.value;
+      const id = selectedOption.value;
       const front_side = document.getElementById('front-side').value;
       const back_side = document.getElementById('back-side').value;
       
+      const group_id = parseInt(id);
       const cardData = {
         "group_id": group_id, 
         "front_side": front_side,
