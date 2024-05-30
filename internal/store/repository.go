@@ -22,6 +22,8 @@ type CardsRepository interface {
 type UsersLKRepository interface {
 	Create(*model.UserLK, *model.User) error
 	FindByNickname(nick string) error
+	LKDescriptionEdit(lk *model.UserLK) error
+	LKShow(lk *model.UserLK) error
 }
 
 type GroupRepository interface {

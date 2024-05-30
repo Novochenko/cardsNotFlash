@@ -95,6 +95,8 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/groupshow", s.HandleGroupShow()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/showallgroups", s.HandleShowAllGroups()).Methods(http.MethodGet, http.MethodOptions)
 	private.HandleFunc("/showgroupusingtime", s.HandleGroupShowUsingTime()).Methods(http.MethodPost, http.MethodOptions)
+	private.HandleFunc("/lkshow", s.HandleLKShow()).Methods(http.MethodGet, http.MethodOptions)
+	private.HandleFunc("/lkdescriptionedit", s.HandleLKDescriptionEdit()).Methods(http.MethodPost, http.MethodOptions)
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
@@ -152,6 +154,63 @@ func (s *server) HandleCardFlagUp() http.HandlerFunc {
 			ID:     req.ID,
 		}
 		if err := s.store.Card().CardFlagUp(card); err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+	}
+}
+func (s *server) HandleLKDescriptionEdit() http.HandlerFunc {
+	type request struct {
+		UserDescription string `json:"user_description"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+		session, err := s.sessionStore.Get(r, sessionKeyName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		id, ok := session.Values["user_id"]
+		if !ok {
+			s.error(w, r, http.StatusUnauthorized, err)
+			return
+		}
+		lk := &model.UserLK{
+			UserID:          id.(int64),
+			UserDescription: req.UserDescription,
+		}
+		if err = s.store.UserLK().LKDescriptionEdit(lk); err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		s.respond(w, r, http.StatusOK, nil)
+	}
+}
+func (s *server) HandleLKShow() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, err := s.sessionStore.Get(r, sessionKeyName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		id, ok := session.Values["user_id"]
+		if !ok {
+			s.error(w, r, http.StatusUnauthorized, err)
+			return
+		}
+		lk := &model.UserLK{
+			UserID: id.(int64),
+		}
+		if err = s.store.UserLK().LKShow(lk); err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(lk); err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
@@ -238,7 +297,7 @@ func (s *server) SessionsQuit() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
-		session.Options.MaxAge = 0
+		session.Options.MaxAge = -1
 		session.Save(r, w)
 		w.WriteHeader(http.StatusOK)
 	}

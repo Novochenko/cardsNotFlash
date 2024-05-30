@@ -10,10 +10,17 @@ type UserLK struct {
 	Nickname        string `json:"nickname"`
 	CardsCount      int64  `json:"cards_count"`
 	UserDescription string `json:"user_desription"`
+	Email           string `json:"email"`
 }
 
 func (ulk *UserLK) Validate() error {
 	return validation.ValidateStruct(
 		ulk,
 		validation.Field(&ulk.Nickname, validation.Required))
+}
+func (ulk *UserLK) ValidateShow() error {
+	return validation.ValidateStruct(
+		ulk,
+		validation.Field(&ulk.UserID, validation.Required),
+	)
 }

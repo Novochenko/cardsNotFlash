@@ -5,9 +5,10 @@ import (
 )
 
 type Group struct {
-	GroupName string `json:"group_name"`
-	GroupID   int64  `json:"group_id"`
-	UserID    int64  `json:"user_id"`
+	GroupName  string `json:"group_name"`
+	GroupID    int64  `json:"group_id"`
+	UserID     int64  `json:"user_id"`
+	CardsCount int64  `json:"cards_count"`
 }
 
 func (g *Group) Validate() error {

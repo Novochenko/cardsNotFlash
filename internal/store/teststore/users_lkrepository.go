@@ -12,3 +12,9 @@ func (ulk *UsersLKRepository) Create(lk *model.UserLK, u *model.User) error {
 func (ulk *UsersLKRepository) FindByNickname(nick string) error {
 	return nil
 }
+func (ulk *UsersLKRepository) LKDescriptionEdit(lk *model.UserLK) error {
+	return nil
+}
+func (ulk *UsersLKRepository) LKShow(lk *model.UserLK) error {
+	return nil
+}

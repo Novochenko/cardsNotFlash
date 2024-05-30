@@ -13,9 +13,6 @@ func (ulk *UsersLKRepository) Create(lk *model.UserLK, u *model.User) error {
 	if err := lk.Validate(); err != nil {
 		return err
 	}
-	// if err := ulk.FindByNickname(lk.Nickname); err != nil {
-	// 	return err
-	// }
 	stmt, err := ulk.store.db.Prepare("INSERT lk (user_id, nickname, email, encrypted_password) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		return err
@@ -40,6 +37,30 @@ func (ulk *UsersLKRepository) FindByNickname(nick string) error {
 	}
 	if exists {
 		return store.ErrNicknameNotAvialable
+	}
+	return nil
+}
+func (ulk *UsersLKRepository) LKShow(lk *model.UserLK) error {
+	if err := lk.ValidateShow(); err != nil {
+		return err
+	}
+	row := ulk.store.db.QueryRow("SELECT email, nickname, cards_count, user_description FROM lk WHERE user_id = ?", lk.UserID)
+	if err := row.Scan(&lk.Email, &lk.Nickname, &lk.CardsCount, &lk.UserDescription); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ulk *UsersLKRepository) LKDescriptionEdit(lk *model.UserLK) error {
+	if lk == nil {
+		return store.ErrEmptyLK
+	}
+	stmt, err := ulk.store.db.Prepare("UPDATE lk SET user_description = ? WHERE user_id = ?")
+	if err != nil {
+		return err
+	}
+	if _, err = stmt.Exec(lk.UserDescription, lk.UserID); err != nil {
+		return err
 	}
 	return nil
 }

@@ -1,14 +1,14 @@
 localhost_mode: true
 bind_addr: ":443"
 log_level: "error"
-cert_pem: "C:/Users/Alex/Desktop/cardsNotFlesh/security/cert.pem"
-key_pem: "C:/Users/Alex/Desktop/cardsNotFlesh/security/cert.key"
-# cert_pem: "D:/User/smth/go/goProjects/flesh-cards-backup/security/cert.pem"
-# key_pem: "D:/User/smth/go/goProjects/flesh-cards-backup/security/cert.key"
+# cert_pem: "C:/Users/Alex/Desktop/cardsNotFlesh/security/cert.pem"
+# key_pem: "C:/Users/Alex/Desktop/cardsNotFlesh/security/cert.key"
+cert_pem: "D:/User/smth/go/goProjects/flesh-cards-backup/security/cert.pem"
+key_pem: "D:/User/smth/go/goProjects/flesh-cards-backup/security/cert.key"
 database_url:
   meow: $DATABASE_FULLNAME
-  #fullname: "root:shlyapa228123@tcp(localhost:3306)/userdb?parseTime=true"
-  fullname: "root:password@tcp(localhost:3306)/userdb?parseTime=true"
+  fullname: "root:shlyapa228123@tcp(localhost:3306)/userdb?parseTime=true"
+  #fullname: "root:password@tcp(localhost:3306)/userdb?parseTime=true"
   port: "3306"
   host: mysql
   user: root

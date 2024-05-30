@@ -12,7 +12,7 @@ type UserRepository struct {
 
 func (ur *UserRepository) ShowALLGroups(u *model.User) ([]*model.Group, error) {
 	groups := []*model.Group{}
-	rows, err := ur.store.db.Query("SELECT group_id, group_name, user_id FROM card_groups WHERE user_id = ?", u.ID)
+	rows, err := ur.store.db.Query("SELECT group_id, group_name, user_id, cards_count FROM card_groups WHERE user_id = ?", u.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, store.ErrRecordNotFound
@@ -21,7 +21,7 @@ func (ur *UserRepository) ShowALLGroups(u *model.User) ([]*model.Group, error) {
 	}
 	for rows.Next() {
 		g := &model.Group{}
-		rows.Scan(&g.GroupID, &g.GroupName, &g.UserID)
+		rows.Scan(&g.GroupID, &g.GroupName, &g.UserID, &g.CardsCount)
 		groups = append(groups, g)
 	}
 	return groups, nil
