@@ -40,14 +40,10 @@
 <div id="content-wrapper">
       <div class="mui--appbar-height" style="color: #512da8" >
       </div>
-    <button id="fetch-cards">Открыть карточки</button>
-      <select id="container-list" onchange="handleSelectChange()">
-      </select>
     <section class="container">
       <div class="head">
           <lable class="lable" for="list">Выберите список:</lable>
-          <select class="decks" name="list" id="decks">
-
+          <select class="decks" name="list" id="decks"  onchange="handleSelectChange()"></select>
           </select>
       </div>
 

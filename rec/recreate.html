@@ -40,11 +40,10 @@
   <h1>Загрузка списка JSON-файлов и изменение выбранного файла</h1>
   <div id="content-wrapper" >
     <div class="mui--appbar-height" style="color: #0288D1" >Загрузка списка JSON-файлов и изменение выбранного файла</div>
-    <button id="load-btn">Загрузить список JSON-файлов</button>
-    <select id="json-select"></select>
-    <button id="edit-btn">Обновить выбранный файл</button>
-    <div id="json-data"></div>
-    <div id="cards-containter"></div>
+    <div id="edit-card" onchange="editCard()"></div>
+    <input type="text" id="front-side" name="question" placeholder="Вопрос">
+    <input type="text" id="back-side" name="answer" placeholder="Ответ">
+    <button id="add-btn">Отправить</button>
   </div>
   <script src="recreate.js"></script>
   <script src="../static/script.js"></script>

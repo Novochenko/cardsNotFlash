@@ -24,7 +24,7 @@ return response.json()})
     // Создаем опции для select
     const options = data.map(data => `<option value=${data.group_id}>${data.group_name}</option>`);
     // Вставляем опции в select
-    document.getElementById('container-list').innerHTML = options.join(' ');
+    document.getElementById('decks').innerHTML = options.join(' ');
     data.forEach(item => {
         if (!questionSetsJSON.includes(item.group_id)){
             questionSetsJSON.map(item => [item.group_id, item.group_name]);
@@ -37,7 +37,7 @@ return response.json()})
     })
 
 function handleSelectChange() {
-    const selectedOption = document.getElementById('container-list').selectedOptions[0];
+    const selectedOption = document.getElementById('decks').selectedOptions[0];
     if (selectedOption) {
       // Получаем значение и текст выбранного элемента
       const group_id = selectedOption.value;
@@ -72,7 +72,7 @@ function handleSelectChange() {
             "front_side": card.front_side,
             "back_side": card.back_side
           }));
-        const cardshows = document.getElementById('container-list');
+        const cardshows = document.getElementById('decks');
 
         cardshows.addEventListener('click', () =>{
             window.addEventListener("beforeunload", (e) => {

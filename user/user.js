@@ -1,11 +1,7 @@
-// Получаем элементы профиля
-const profile = document.getElementById('profile');
-const avatar = document.getElementById('avatar');
-const username = document.getElementById('username');
-
 // Отправляем запрос на сервер для получения аватарки
-fetch('http://127.0.0.1:443/private/whoami/', {
+fetch('https://localhost:443/private/lkshow/', {
   method: 'GET',
+  credentials: 'include',
   headers: {
     'Content-Type': 'application/json'
   }
@@ -13,21 +9,52 @@ fetch('http://127.0.0.1:443/private/whoami/', {
 .then((response) => {
   if (response.ok){
     console.log('user ok');
-    // ...
   }
   else{
     console.log('user error');
   }
-  return response.json()})
+return response.json()})
 .then((data) => {
-  if (data.success) {
+    const userTkn = document.getElementById("content-lk");
     // Обновляем аватарку и имя пользователя
-    avatar.src = data.avatarUrl;
-    username.textContent = data.username;
-  } else {
-    console.error('Ошибка загрузки аватарки');
-  }
-})
+    const userLk = document.createElement('div');
+      userLk.innerHTML=`
+      <div class="wrapper">
+          <div class="left">
+              <img src="https://i.stack.imgur.com/pw4Ug.gif?s=256&g=1" alt="user" width="100">
+              <h4>${data.nickname}</h4>
+               <p>Designer</p>
+          </div>
+          <div class="right">
+              <div class="info">
+                  <h3>Информация</h3>
+                  <div class="info_data">
+                       <div class="data">
+                          <h4>Email</h4>
+                          <p>${data.email}</p>
+                       </div>
+                  </div>
+              </div>
+    
+            <div class="projects">
+                  <h3>Информация</h3>
+                  <div class="projects_data">
+                       <div class="data">
+                          <h4>Описание</h4>
+                          <p>${data.user_description}</p>
+                       </div>
+                       <div class="data">
+                         <h4>Количество карт</h4>
+                          <p>${data.cards_count}</p>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      `;
+      userTkn.appendChild(userLk);
+  })
+
 .catch((error) => {
   console.error(error);
 });

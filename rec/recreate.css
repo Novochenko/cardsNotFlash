@@ -23,3 +23,31 @@ button#edit-btn {
 .mui--appbar-height{
     font-size: 20px;
 }
+
+#edit{
+    display: block;
+    flex-wrap: wrap;
+    width: 25%;
+    height: 100px;
+    background-color: #6b86a6;
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 12px;
+    filter: drop-shadow(10px 7px 10px #0288D1)
+}
+
+#edit:hover{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+#edit:active{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+input{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    top: 30%;
+    left: 50%;
+}

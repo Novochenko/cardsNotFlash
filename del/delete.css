@@ -5,14 +5,7 @@
     box-sizing: border-box;
     font-family: 'Montserrat', sans-serif;
 }
-
-button#load-btn {
-    font-size: calc(20px);
-}
-select#json-files {
-    font-size: calc(20px);
-}
-button#delete-btn {
+button#del-btn {
     font-size: calc(20px);
 }
 
@@ -22,4 +15,34 @@ button#delete-btn {
 
 .mui--appbar-height{
     font-size: 20px;
+}
+.delete-card{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap; /* allow items to wrap to a new row */
+    justify-content: space-between; /* distribute items evenly */
+}
+#box{
+    display: block;
+    flex-wrap: wrap;
+    width: 25%;
+    height: 100px;
+    background-color: #6b86a6;
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 12px;
+    filter: drop-shadow(10px 7px 10px #0288D1)
+}
+#box:hover{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+#box:active{
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.containter-del:hover{
+    /* стили для состояния при клике */
+    background-color: #ccc; /* серый цвет фона */
+    border-color: #666; /* темно-серый цвет рамки */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }

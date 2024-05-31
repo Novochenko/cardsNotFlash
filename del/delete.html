@@ -9,6 +9,7 @@
   <link rel="stylesheet" type="text/css" media="screen" href="delete.css"/>
   <script src="https://cdn.muicss.com/mui-latest/js/mui.min.js"></script>
   <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script src="delete.js" defer></script>
   <title>Удаление JSON файла</title>
 </head>
 <body>
@@ -39,14 +40,11 @@
   <h1>Удаление JSON файла</h1>
   <div id="content-wrapper">
     <div class="mui--appbar-height" style="color: #0288D1" >Удаление JSON файла</div>
-    <button id="load-btn">Загрузить список JSON файлов</button>
-    <select id="json-files"></select>
-    <button id="delete-btn">Удалить выбранный файл</button>
-    <div id="result"></div>
+    <div id="delete-card" onchange="deleteCard()"></div>
+    <button id="del-btn">Отправить</button>
   </div>
-
   <script src="../static/script.js"></script>
-  <script src="delete.js"></script>
+  
 </body>
 <footer id="footer">
   <div class="mui-container-fluid">
