@@ -34,32 +34,52 @@ return response.json()})
         listItems[i].addEventListener('click', function() {
           // Выбрали элемент, теперь можно взаимодействовать с ним
           const selectedOption = this.dataset.id;
-          console.log(`Выбран элемент №: ${selectedOption}`);
+          
+          Swal.fire({
+            title: `Выберите элемент с ID ${selectedOption}`,
+            text: 'Вы уверены, что хотите выбрать этот элемент?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Да, выбрать',
+            cancelButtonText: 'Отмена'
+          })
+          .then((result =>{
+            if (result.isConfirmed){
+              console.log(`Выбран элемент №: ${selectedOption}`);
         
-          if(selectedOption){
-            console.log('rrerere');
-            const id = selectedOption;
-            const card_id = parseInt(id);
-            const cardDel = {
-              "card_id": card_id
+              if(selectedOption){
+                console.log('rrerere');
+                const id = selectedOption;
+                const card_id = parseInt(id);
+                const cardDel = {
+                  "card_id": card_id
+                }
+                fetch('https://localhost:443/private/deletecard',{
+                  method: 'POST',
+                  credentials: 'include',
+                  headers:{
+                    "Content-Type": "application/json"
+                  },
+                  body:JSON.stringify(cardDel)
+                })
+                .then(response =>{
+                  if(response.ok){
+                    location.reload();
+                    console.log('delete success')
+                    
+                  }
+                  else{
+                    console.log('delete error')
+                  }
+                })
+              }
             }
-            fetch('https://localhost:443/private/deletecard',{
-              method: 'POST',
-              credentials: 'include',
-              headers:{
-                "Content-Type": "application/json"
-              },
-              body:JSON.stringify(cardDel)
-            })
-            .then(response =>{
-              if(response.ok){
-                console.log('delete success')
-              }
-              else{
-                console.log('delete error')
-              }
-            })
-          }
+            else{
+              console.log('Действие отменено');
+            }
+          }))
+
+
 })
 }
 })
