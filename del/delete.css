@@ -40,9 +40,3 @@ button#del-btn {
 #box:active{
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
-.containter-del:hover{
-    /* стили для состояния при клике */
-    background-color: #ccc; /* серый цвет фона */
-    border-color: #666; /* темно-серый цвет рамки */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
