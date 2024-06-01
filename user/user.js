@@ -21,7 +21,7 @@ return response.json()})
       userLk.innerHTML=`
       <div class="wrapper">
           <div class="left">
-              <img src="https://i.stack.imgur.com/pw4Ug.gif?s=256&g=1" alt="user" width="100">
+              <img src="https://www.goodwholefood.com/wp-content/uploads/2016/11/potatoes.jpg" alt="user" width="100">
               <h4>${data.nickname}</h4>
                <p>Designer</p>
           </div>
