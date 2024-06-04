@@ -272,6 +272,7 @@ func (s *server) HandleLKShow() http.HandlerFunc {
 			return
 		}
 		slog.Info(fmt.Sprint(m))
+		w.Header().Set("Content-Type", "multipart/form-data")
 		w.Write(buf.Bytes())
 
 		// w.Header().Set("Content-Type", "application/json")
