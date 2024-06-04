@@ -195,7 +195,7 @@ func (s *server) HandleLKDescriptionEdit() http.HandlerFunc {
 		s.respond(w, r, http.StatusOK, nil)
 	}
 }
-func upload(values map[string]interface{}) (b *bytes.Buffer, err error) {
+func upload(values map[string]interface{}) (b *bytes.Buffer, err error, dataType string) {
 	// Prepare a form that you will submit to that URL.
 	b = &bytes.Buffer{}
 	w := multipart.NewWriter(b)
@@ -208,24 +208,25 @@ func upload(values map[string]interface{}) (b *bytes.Buffer, err error) {
 		if x, ok := r.(*os.File); ok {
 			part, err := w.CreateFormFile(key, x.Name())
 			if err != nil {
-				return nil, err
+				return nil, err, ""
 			}
 			if _, err := io.Copy(part, x); err != nil {
-				return nil, err
+				return nil, err, ""
 			}
 		}
 		if x, ok := r.(string); ok {
 			// Add other fields
 			if err = w.WriteField(key, x); err != nil {
-				return nil, err
+				return nil, err, ""
 			}
 		}
 		if x, ok := r.(int64); ok {
 			// Add other fields
 			if err = w.WriteField(key, strconv.Itoa(int(x))); err != nil {
-				return nil, err
+				return nil, err, ""
 			}
 		}
+		dataType = w.FormDataContentType()
 	}
 
 	// Don't forget to close the multipart writer.
@@ -266,13 +267,13 @@ func (s *server) HandleLKShow() http.HandlerFunc {
 		defer file.Close()
 		lk.Image = file
 		m := structs.Map(lk)
-		buf, err := upload(m)
+		buf, err, dataType := upload(m)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
 		slog.Info(fmt.Sprint(m))
-		w.Header().Set("Content-Type", "multipart/form-data")
+		w.Header().Set("Content-Type", dataType)
 		w.Write(buf.Bytes())
 
 		// w.Header().Set("Content-Type", "application/json")
