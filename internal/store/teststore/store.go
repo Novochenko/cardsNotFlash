@@ -59,3 +59,7 @@ func (s *Store) Group() store.GroupRepository {
 	}
 	return s.groupRepository
 }
+
+func (s *Store) Images() string {
+	return " "
+}

@@ -12,7 +12,7 @@ import (
 func TestUserrepository_Create(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 	defer teardown("users")
-	s := sqlstore.New(db)
+	s := sqlstore.New(db, "string")
 	u := model.TestUser(t)
 	err := s.User().Create(u)
 	assert.NoError(t, err)
@@ -21,7 +21,7 @@ func TestUserrepository_Create(t *testing.T) {
 func TestUserrepository_FindByEmail(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 	defer teardown("users")
-	s := sqlstore.New(db)
+	s := sqlstore.New(db, "string")
 	email := "user@example.org"
 	_, err := s.User().FindByEmail(email)
 
@@ -37,7 +37,7 @@ func TestUserRepository_Find(t *testing.T) {
 	db, teardown := sqlstore.TestDB(t, databaseURL)
 	defer teardown("users")
 
-	s := sqlstore.New(db)
+	s := sqlstore.New(db, "string")
 	u1 := model.TestUser(t)
 	s.User().Create(u1)
 	u2, err := s.User().Find(int64(u1.ID))

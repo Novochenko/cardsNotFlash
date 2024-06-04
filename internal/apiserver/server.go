@@ -1,18 +1,22 @@
 package apiserver
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"firstRestAPI/internal/model"
 	"firstRestAPI/internal/store"
 	"fmt"
+	"io"
 	"log/slog"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/fatih/structs"
 	"github.com/google/uuid"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
@@ -97,6 +101,7 @@ func (s *server) configureRouter() {
 	private.HandleFunc("/showgroupusingtime", s.HandleGroupShowUsingTime()).Methods(http.MethodPost, http.MethodOptions)
 	private.HandleFunc("/lkshow", s.HandleLKShow()).Methods(http.MethodGet, http.MethodOptions)
 	private.HandleFunc("/lkdescriptionedit", s.HandleLKDescriptionEdit()).Methods(http.MethodPost, http.MethodOptions)
+	private.HandleFunc("/pfpupload", s.HandlePFPUpload()).Methods(http.MethodPost, http.MethodOptions)
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
@@ -190,6 +195,53 @@ func (s *server) HandleLKDescriptionEdit() http.HandlerFunc {
 		s.respond(w, r, http.StatusOK, nil)
 	}
 }
+func upload(values map[string]interface{}) (b *bytes.Buffer, err error) {
+	// Prepare a form that you will submit to that URL.
+	b = &bytes.Buffer{}
+	w := multipart.NewWriter(b)
+	defer w.Close()
+	for key, r := range values {
+		if x, ok := r.(io.Closer); ok {
+			defer x.Close()
+		}
+		// Add an image file
+		if x, ok := r.(*os.File); ok {
+			part, err := w.CreateFormFile(key, x.Name())
+			if err != nil {
+				return nil, err
+			}
+			if _, err := io.Copy(part, x); err != nil {
+				return nil, err
+			}
+		}
+		if x, ok := r.(string); ok {
+			// Add other fields
+			if err = w.WriteField(key, x); err != nil {
+				return nil, err
+			}
+		}
+		if x, ok := r.(int64); ok {
+			// Add other fields
+			if err = w.WriteField(key, strconv.Itoa(int(x))); err != nil {
+				return nil, err
+			}
+		}
+	}
+
+	// Don't forget to close the multipart writer.
+	// If you don't close it, your request will be missing the terminating boundary.
+	return
+}
+
+// Close() обязательно
+func mustOpen(f string) *os.File {
+	r, err := os.Open(f)
+	if err != nil {
+		panic(err)
+	}
+	return r
+}
+
 func (s *server) HandleLKShow() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := s.sessionStore.Get(r, sessionKeyName)
@@ -209,11 +261,24 @@ func (s *server) HandleLKShow() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(lk); err != nil {
+		strID := strconv.Itoa(int(id.(int64)))
+		file := mustOpen(s.store.Images() + "/" + "pfpimages" + "/" + strID + ".png")
+		defer file.Close()
+		lk.Image = file
+		m := structs.Map(lk)
+		buf, err := upload(m)
+		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
+		slog.Info(fmt.Sprint(m))
+		w.Write(buf.Bytes())
+
+		// w.Header().Set("Content-Type", "application/json")
+		// if err := json.NewEncoder(w).Encode(lk); err != nil {
+		// 	s.error(w, r, http.StatusInternalServerError, err)
+		// 	return
+		// }
 	}
 }
 
@@ -578,6 +643,33 @@ func (s *server) HandleDeleteCard() http.HandlerFunc {
 			return
 		}
 		//s.respond(w, r, http.StatusOK, nil)
+	}
+}
+
+func (s *server) HandlePFPUpload() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, err := s.sessionStore.Get(r, sessionKeyName)
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		id, ok := session.Values["user_id"]
+		if !ok {
+			s.error(w, r, http.StatusUnauthorized, errNotAuthenticated)
+			return
+		}
+		strID := strconv.Itoa(int(id.(int64)))
+		file, err := os.Create(s.store.Images() + "/" + "pfpimages" + "/" + strID + ".png")
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
+		defer file.Close()
+		//buf := bytes.NewBuffer(nil)
+		if _, err := io.Copy(file, r.Body); err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
 	}
 }
 func (s *server) HandleShowAllGroups() http.HandlerFunc {

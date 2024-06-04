@@ -51,4 +51,21 @@ BEGIN
     SET cards_count = cards_count + 1
     WHERE card_groups.user_id = NEW.user_id AND card_groups.group_id = NEW.group_id;
 END; //
+
+CREATE TRIGGER decrement_cards_count_lk
+AFTER DELETE ON cards
+FOR EACH ROW
+BEGIN
+    UPDATE lk
+    SET cards_count = cards_count - 1
+    WHERE lk.user_id = OLD.user_id;
+END; //
+CREATE TRIGGER decrement_cards_count_group
+AFTER DELETE ON cards
+FOR EACH ROW
+BEGIN
+	UPDATE card_groups
+    SET cards_count = cards_count - 1
+    WHERE card_groups.user_id = OLD.user_id AND card_groups.group_id = OLD.group_id;
+END; //
 delimiter ;

@@ -23,6 +23,7 @@ type Config struct {
 	LocalHostMode bool        `yaml:"localhost_mode"`
 	KeyPem        string      `yaml:"key_pem"`
 	CertPem       string      `yaml:"cert_pem"`
+	ImagesPath    string      `yaml:"images_path"`
 }
 
 func NewConfig() Config {

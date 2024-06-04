@@ -9,15 +9,17 @@ import (
 
 type Store struct {
 	db                *sql.DB
+	images            string
 	userRepository    *UserRepository
 	cardRepository    *CardRepository
 	usersLKRepository *UsersLKRepository
 	groupRepository   *GroupRepository
 }
 
-func New(db *sql.DB) *Store {
+func New(db *sql.DB, imagePath string) *Store {
 	return &Store{
-		db: db,
+		db:     db,
+		images: imagePath,
 	}
 }
 
@@ -58,4 +60,7 @@ func (s *Store) Group() store.GroupRepository {
 		store: s,
 	}
 	return s.groupRepository
+}
+func (s *Store) Images() string {
+	return s.images
 }

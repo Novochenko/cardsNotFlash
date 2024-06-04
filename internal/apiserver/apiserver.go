@@ -17,7 +17,7 @@ func Start(config *Config) error {
 		return err
 	}
 	defer db.Close()
-	store := sqlstore.New(db)
+	store := sqlstore.New(db, config.ImagesPath)
 	sessionStore, err := NewRedisSessions(config)
 	if err != nil {
 		return err

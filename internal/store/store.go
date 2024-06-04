@@ -5,4 +5,5 @@ type Store interface {
 	Card() CardsRepository
 	UserLK() UsersLKRepository
 	Group() GroupRepository
+	Images() string
 }

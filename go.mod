@@ -3,6 +3,7 @@ module firstRestAPI
 go 1.21.5
 
 require (
+	github.com/fatih/structs v1.1.0
 	github.com/go-redis/redis v6.15.5+incompatible
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/handlers v1.5.2
