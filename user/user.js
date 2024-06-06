@@ -29,19 +29,25 @@ fetch('https://localhost:443/private/lkshow/', {
 })
 .then((response) => response.formData())
 .then((data) => {
-    imageUrl = URL.createObjectURL(new Blob([], { type: 'image/png' }));
-    console.log(data.has('image'));
+    const img = data.has('image');
+    const src = 'https://www.hdsfoods.co.uk/wp-content/uploads/2014/01/Potato-White.jpg';
+    console.log(img);
+
+    const user_id = data.get('user_id');
     const email = data.get('email');
     const nickname = data.get('nickname');
     const user_description = data.get('user_description');
     const cards_count = data.get('cards_count');
     const userTkn = document.getElementById("content-lk");
     // Обновляем аватарку и имя пользователя
+    if (data.has('image')){
+      src.replace('www.hdsfoods.co.uk/wp-content/uploads/2014/01/Potato-White.jpg','localhost:443/images/pfpimages/${user_id}.png');
+    }
     const userLk = document.createElement('div');
       userLk.innerHTML=`
       <div class="wrapper">
           <div class="left">
-              <img id="uploaded-image" src="" alt="Uploaded Image" width="100">
+              <img id="uploaded-image" src=${src} alt="Uploaded Image" width="200">
               <h4>${nickname}</h4>
                <p>Designer</p>
                <input type="file" id="file-input" accept="image/png"/>
