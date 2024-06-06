@@ -1,29 +1,51 @@
+// function binEncode(data) {
+//   var binArray = []
+//   var datEncode = "";
+
+//   for (i=0; i < data.length; i++) {
+//       binArray.push(data[i].charCodeAt(0).toString(2)); 
+//   } 
+//   for (j=0; j < binArray.length; j++) {
+//       var pad = padding_left(binArray[j], '0', 8);
+//       datEncode += pad + ' '; 
+//   }
+//   function padding_left(s, c, n) { if (! s || ! c || s.length >= n) {
+//       return s;
+//   }
+//   var max = (n - s.length)/c.length;
+//   for (var i = 0; i < max; i++) {
+//       s = c + s; } return s;
+//   }
+//   console.log(binArray);
+// }
+
 // Отправляем запрос на сервер для получения аватарки
 fetch('https://localhost:443/private/lkshow/', {
   method: 'GET',
   credentials: 'include',
   headers: {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/octet-stream'
   }
 })
-.then((response) => {
-  if (response.ok){
-    console.log('user ok');
-  }
-  else{
-    console.log('user error');
-  }
-return response.json()})
+.then((response) => response.formData())
 .then((data) => {
+    imageUrl = URL.createObjectURL(new Blob([], { type: 'image/png' }));
+    console.log(data.has('image'));
+    const email = data.get('email');
+    const nickname = data.get('nickname');
+    const user_description = data.get('user_description');
+    const cards_count = data.get('cards_count');
     const userTkn = document.getElementById("content-lk");
     // Обновляем аватарку и имя пользователя
     const userLk = document.createElement('div');
       userLk.innerHTML=`
       <div class="wrapper">
           <div class="left">
-              <img src="https://www.goodwholefood.com/wp-content/uploads/2016/11/potatoes.jpg" alt="user" width="100">
-              <h4>${data.nickname}</h4>
+              <img id="uploaded-image" src="file:///C:/Users/Alex/Desktop/cardsNotFlesh/images/pfpimages/1.png" alt="Uploaded Image" width="100">
+              <h4>${nickname}</h4>
                <p>Designer</p>
+               <input type="file" id="file-input" accept="image/png"/>
+               <button id="select-file-btn">Select PNG file</button>
           </div>
           <div class="right">
               <div class="info">
@@ -31,7 +53,7 @@ return response.json()})
                   <div class="info_data">
                        <div class="data">
                           <h4>Email</h4>
-                          <p>${data.email}</p>
+                          <p>${email}</p>
                        </div>
                   </div>
               </div>
@@ -41,11 +63,11 @@ return response.json()})
                   <div class="projects_data">
                        <div class="data">
                           <h4>Описание</h4>
-                          <p>${data.user_description}</p>
+                          <p>${user_description}</p>
                        </div>
                        <div class="data">
                          <h4>Количество карт</h4>
-                          <p>${data.cards_count}</p>
+                          <p>${cards_count}</p>
                     </div>
                   </div>
               </div>
@@ -53,8 +75,48 @@ return response.json()})
       </div>
       `;
       userTkn.appendChild(userLk);
-  })
+      const uploadedImage = document.getElementById('uploaded-image');
+      console.log(uploadedImage.src);
+      const uploadBut = document.getElementById('select-file-btn');
+      const imageInput = document.getElementById('file-input');
+      if (imageInput){
+        uploadBut.addEventListener('click', () =>{
+          //e.preventDefault();
+          console.log('upload');
+          const file = imageInput.files[0];
+          const reader = new FileReader();
+          reader.readAsArrayBuffer(file);
+          reader.onload = () => {
+            const arrayBuffer = reader.result;
+            const uint8Array = new Uint8Array(arrayBuffer);
+            const formData = new FormData();
+            formData.append('image', new Blob([uint8Array], { type: 'image/png' }));
 
+            // const blob = new Blob([uint8Array], {type: 'image/png'});
+            // const url = URL.createObjectURL(blob);
+
+            fetch('https://localhost:443/private/pfpupload', {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                  'Content-Type': 'application/octet-stream'
+              },
+              body: formData
+              })
+              .then((response) => {
+                if (response.ok){
+                  console.log('image upload successfully');
+                  //location.reload();
+                }
+                else{
+                  console.log('image upload error');
+                }
+              return response;
+              })
+          }
+        })
+      }
+  })
 .catch((error) => {
   console.error(error);
 });
