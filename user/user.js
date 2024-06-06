@@ -41,7 +41,7 @@ fetch('https://localhost:443/private/lkshow/', {
       userLk.innerHTML=`
       <div class="wrapper">
           <div class="left">
-              <img id="uploaded-image" src="" alt="Uploaded Image" width="100">
+              <img id="uploaded-image" src="D:/User/smth/go/goProjects/flesh-cards-backup/images/pfpimages/1.png" alt="Uploaded Image" width="100">
               <h4>${nickname}</h4>
                <p>Designer</p>
                <input type="file" id="file-input" accept="image/png"/>

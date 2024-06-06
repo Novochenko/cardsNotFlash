@@ -195,7 +195,7 @@ func (s *server) HandleLKDescriptionEdit() http.HandlerFunc {
 		s.respond(w, r, http.StatusOK, nil)
 	}
 }
-func upload(values map[string]interface{}) (b *bytes.Buffer, err error, dataType string) {
+func upload(values map[string]interface{}) (b *bytes.Buffer, dataType string, err error) {
 	// Prepare a form that you will submit to that URL.
 	b = &bytes.Buffer{}
 	w := multipart.NewWriter(b)
@@ -206,24 +206,27 @@ func upload(values map[string]interface{}) (b *bytes.Buffer, err error, dataType
 		}
 		// Add an image file
 		if x, ok := r.(*os.File); ok {
+			if x == nil {
+				continue
+			}
 			part, err := w.CreateFormFile(key, x.Name())
 			if err != nil {
-				return nil, err, ""
+				return nil, "", err
 			}
 			if _, err := io.Copy(part, x); err != nil {
-				return nil, err, ""
+				return nil, "", err
 			}
 		}
 		if x, ok := r.(string); ok {
 			// Add other fields
 			if err = w.WriteField(key, x); err != nil {
-				return nil, err, ""
+				return nil, "", err
 			}
 		}
 		if x, ok := r.(int64); ok {
 			// Add other fields
 			if err = w.WriteField(key, strconv.Itoa(int(x))); err != nil {
-				return nil, err, ""
+				return nil, "", err
 			}
 		}
 		dataType = w.FormDataContentType()
@@ -235,12 +238,12 @@ func upload(values map[string]interface{}) (b *bytes.Buffer, err error, dataType
 }
 
 // Close() обязательно
-func mustOpen(f string) *os.File {
+func mustOpen(f string) (*os.File, error) {
 	r, err := os.Open(f)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return r
+	return r, nil
 }
 
 func (s *server) HandleLKShow() http.HandlerFunc {
@@ -263,11 +266,16 @@ func (s *server) HandleLKShow() http.HandlerFunc {
 			return
 		}
 		strID := strconv.Itoa(int(id.(int64)))
-		file := mustOpen(s.store.Images() + "/" + "pfpimages" + "/" + strID + ".png")
-		defer file.Close()
-		lk.Image = file
+		file, err := mustOpen(s.store.Images() + "/" + "pfpimages" + "/" + strID + ".png")
+		if err != nil {
+			slog.Info("no pfp image")
+		}
+		if !os.IsNotExist(err) {
+			defer file.Close()
+			lk.Image = file
+		}
 		m := structs.Map(lk)
-		buf, err, dataType := upload(m)
+		buf, dataType, err := upload(m)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
