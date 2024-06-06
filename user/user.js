@@ -91,6 +91,7 @@ fetch('https://localhost:443/private/lkshow/', {
             const uint8Array = new Uint8Array(arrayBuffer);
             const formData = new FormData();
             formData.append('image', new Blob([uint8Array], { type: 'image/png' }));
+            req = new Blob([uint8Array], { type: 'image/png' });
 
             // const blob = new Blob([uint8Array], {type: 'image/png'});
             // const url = URL.createObjectURL(blob);
@@ -101,7 +102,7 @@ fetch('https://localhost:443/private/lkshow/', {
               headers: {
                   'Content-Type': 'application/octet-stream'
               },
-              body: formData
+              body: req
               })
               .then((response) => {
                 if (response.ok){
