@@ -1,5 +1,3 @@
-
-
 // Отправляем запрос на сервер для получения аватарки
 fetch('https://localhost:443/private/lkshow/', {
   method: 'GET',
@@ -17,7 +15,11 @@ fetch('https://localhost:443/private/lkshow/', {
     const user_id = data.get('user_id');
     const email = data.get('email');
     const nickname = data.get('nickname');
-    const user_description = data.get('user_description');
+    const user_description = data.get('user_desription');
+
+    if(!(data.has('user_desription'))){
+      user_description = '';
+    }
     const cards_count = data.get('cards_count');
     const userTkn = document.getElementById("tab/two");
     // Обновляем аватарку и имя пользователя
@@ -32,11 +34,40 @@ fetch('https://localhost:443/private/lkshow/', {
     <ul>
       <li id='header-nickname'>${nickname}</li>
       <li><img id="mini-img" src="${src}" alt="Uploaded Image" width="60"></li>
-      <li id='header-exit'><a href="../auth/auth.html" onclick="exit()">Exit</a></li>
+      <button id='header-exit'>Exit</button>
     </ul>
     `;
     headerTake.appendChild(headerUser);
     console.log(src);
+        const exitBut = document.getElementById('header-exit');
+        exitBut.addEventListener('click', ()=>{
+          Swal.fire({
+            title: `Вы уверены что хотите выйти?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Выйти',
+            cancelButtonText: 'Отмена'
+          })
+          .then((result) => {
+            if(result.isConfirmed){
+              fetch("https://localhost:443/private/sessionquit",{
+                method:"GET",
+                credentials:"include"
+              })
+              .then(response =>{
+                if(response.ok){
+                  window.location.href = "../auth/auth.html";
+                }
+                else{
+                  console.log('failed to delete the session');
+                }
+              })
+            }
+            else{
+              console.log('Выход отменён');
+            }
+          })
+        })
     const userLk = document.createElement('div');
       userLk.innerHTML=`
       <div class="wrapper">
@@ -46,6 +77,7 @@ fetch('https://localhost:443/private/lkshow/', {
                <p>Designer</p>
                <input type="file" id="file-input" accept="image/png"/>
                <button id="select-file-btn">Select PNG file</button>
+               <button id="edit-description">Изменить описание</button>
           </div>
           <div class="right">
               <div class="info">
@@ -59,7 +91,7 @@ fetch('https://localhost:443/private/lkshow/', {
               </div>
     
             <div class="projects">
-                  <h3>Информация</h3>
+                  <h3></h3>
                   <div class="projects_data">
                        <div class="data">
                           <h4>Описание</h4>
@@ -75,6 +107,50 @@ fetch('https://localhost:443/private/lkshow/', {
       </div>
       `;
       userTkn.appendChild(userLk);
+      const editDescription = document.getElementById("edit-description");
+      editDescription.addEventListener('click', () =>{
+        Swal.fire({
+          title: `Введите описание:`,
+          html: `
+            <label class="description" for="user-description">Описание:</label>
+            <input id="user-description" type="text" class="swal2-input">
+          `,
+          focusConfirm: false,
+          showCancelButton: true,
+          cancelButtonText: 'Выход',
+          confirmButtonText: 'Принять',
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          allowOutsideClick: false,
+        
+        preConfirm: () => {
+          const user_description = document.getElementById('user-description').value;
+            // Send data to server or perform other actions
+            console.log(`Описание: ${user_description}`);
+            const newDescription = {
+              "user_description": user_description
+            }
+            fetch('https://localhost:443/private/lkdescriptionedit',{
+              method: "POST",
+              credentials: "include",
+              headers:{
+                "Content-Type": "aplication/json"
+              },
+              body:JSON.stringify(newDescription)
+            })
+            .then(response =>{
+              if (response.ok){
+                location.reload();
+                console.log('Описание добавлено');
+                
+              }
+              else{
+                console.log('Ошибка добавления описания');
+              }
+            })
+          }
+        })
+      })
       const uploadedImage = document.getElementById('uploaded-image');
       console.log(uploadedImage.src);
       const uploadBut = document.getElementById('select-file-btn');
@@ -114,10 +190,11 @@ fetch('https://localhost:443/private/lkshow/', {
                 }
               return response;
               })
+              .catch((error) => {
+                console.error(error);
+              });
           }
         })
       }
-  })
-.catch((error) => {
-  console.error(error);
+
 });

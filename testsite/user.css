@@ -128,3 +128,44 @@ body{
   max-width: 300px;
   border-color: darkgray;
 }
+
+button#header-exit{
+  background-color: rgb(219, 219, 219);
+  width: 100%;
+  max-width: 50px;
+}
+
+div#header-grid.header-grid{
+  width: 40%;
+  max-width: 800px;
+  justify-content: right;
+  align-items: right;
+  display: block;
+}
+
+.wrapper:nth-child(n){
+  animation: show 2s forwards; /* добавляем анимацию для каждого блока */
+  animation-delay: calc((n - 1) * 0.1s); /* рассчитываем delay для каждого блока */
+}
+@keyframes show {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+label.description{
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+
+input#user-description.swal2-input{
+  width: 80%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -48,30 +48,4 @@
 //     $(this).next().slideToggle(200);
 //   });
 // });
-function exit(){
-    Swal.fire({
-      title: `Вы уверены что хотите выйти?`,
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonText: 'Выйти',
-      cancelButtonText: 'Отмена'
-    })
-    .then((result) => {
-      if(result.isConfirmed){
-        fetch("https://localost:443/private/sessionquit",{
-          method:"GET",
-          credentials:"include"
-        })
-        .then(response =>{
-          if(response.ok){
-          }
-          else{
-            console.log('failed to delete the session');
-          }
-        })
-      }
-      else{
-        console.log('Выход отменён');
-      }
-    })
-  }
+

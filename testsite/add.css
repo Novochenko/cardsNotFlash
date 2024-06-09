@@ -84,3 +84,16 @@ lable#add-group.lable{
 lable#fetch-cards.lable{
     height: auto;
 }
+
+#question-form:nth-child(n){
+    animation: show 2s forwards; /* добавляем анимацию для каждого блока */
+    animation-delay: calc((n - 1) * 0.1s); /* рассчитываем delay для каждого блока */
+}
+@keyframes show {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
