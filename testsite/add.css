@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+html {
+    height: 100%;
+    font-family: 'Montserrat', sans-serif;
+    font-size: calc(9px + .7vw);
+}
+body
+
+table {
+    font-size: calc(9px + .3vw);
+    text-align: center;
+}
+
+button {
+    border-radius: 8px;
+    margin-top: auto;
+    margin-bottom: auto;
+    font-size: calc(9px + .7vw);
+    margin: 20px;
+}
+
+div#question-form {
+    font-size: calc(10px + 1vw);
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+
+}
+
+.mui--appbar-height{
+    font-size: 20px;
+}
+
+#fetch-cards{
+    position: flex;
+    justify-content: center;
+    align-items: center;
+}
+.add-select{
+    position: relative;
+    display: flex;
+    width: 100%;
+    max-width: 100px;
+}
+
+input#front-side.add-lable{
+    display: flex;
+    width: 100%;
+    max-width: 200px;
+}
+
+input#back-side.add-lable{
+    display: flex;
+    width: 100%;
+    max-width: 200px;
+}
+button#add-btn.add-lable{
+    display: flex;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    max-width: 200px;
+    max-height: 50px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+}

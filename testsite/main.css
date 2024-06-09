@@ -1,0 +1,281 @@
+
+
+table {
+    font-size: calc(11px + .3vw);
+    text-align: center;
+}
+
+td,
+th {
+    border: 1px solid black;
+}
+
+.rotate_left {
+    transform: rotate(-90.0deg);
+    white-space: nowrap;
+}
+
+.container {
+    position: absolute;
+    top: 20%;
+    left: 30%;
+    max-width: 900px;
+    border-radius: 30px;
+    display: grid;
+    justify-items: center;
+    justify-content: center;
+    margin: auto;
+
+    grid-template-columns: 15% 70% 15%;
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas:
+            ". options ."
+            "true card false"
+            "known remaining next"
+            ". reload .";
+
+    -webkit-perspective: 700px;
+    -moz-perspective: 700px;
+    -o-perspective: 700px;
+    perspective: 700px;
+}
+
+
+/* Card */
+.card {
+    grid-area: card;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    grid-template-areas: "innerCard";
+
+    width: 80%;
+    max-width: 80%;
+    -webkit-transition: -webkit-transform 1s;
+    -moz-transition: -moz-transform 1s;
+    -o-transition: -o-transform 1s;
+    transition: transform 1s;
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    -o-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+}
+
+
+.card div {
+    border-radius: 20px;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+    backface-visibility: hidden;
+    padding: 0 50px 20px 50px;
+    grid-area: card;
+}
+
+.card .front {
+    grid-area: innerCard;
+    background: rgb(238, 238, 238);
+
+
+    filter:drop-shadow(6px 3px 6px rgb(197, 197, 197))
+}
+
+.card .back {
+    display: flex;
+    flex-direction: column;
+    grid-area: innerCard;
+    background: rgb(238, 238, 238);
+    filter:drop-shadow(6px 3px 6px rgb(197, 197, 197));
+    -webkit-transform: rotateY( 180deg );
+    -moz-transform: rotateY( 180deg );
+    -o-transform: rotateY( 180deg );
+    transform: rotateY( 180deg );
+    border-radius: 10 px;
+}
+
+.card.flipped {
+    -webkit-transform: rotateY( 180deg );
+    -moz-transform: rotateY( 180deg );
+    -o-transform: rotateY( 180deg );
+    transform: rotateY( 180deg );
+}
+
+
+/* Content on Card */
+.content {
+    height: 100%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+li {
+    text-align: left;
+}
+
+.solution {
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Buttons */
+button {
+    border: rgb(0, 0, 0);
+    margin-top: auto;
+    margin-bottom: auto;
+    font-size: calc(18px + .7vw);
+    margin: 20px;
+}
+
+button.correct {
+    width: 100%;
+    background-color: rgb(77, 187, 77);
+    grid-area: true;
+    border-radius: 10px;
+    border-color: rgb(129, 125, 125);
+    filter: drop-shadow(5px 3px 5px rgb(77, 187, 77))
+}
+
+button.wrong {
+    background-color: rgb(211, 95, 95);
+    border-radius: 10px;
+    grid-area: false;
+    border-color: rgb(129, 125, 125);
+    filter: drop-shadow(5px 3px 5px rgb(211, 95, 95))
+}
+
+.next {
+    max-height: 100px;
+    color: white;
+    grid-area: next;
+    
+}
+.check_answer{
+    display: flex;
+    justify-content: center;
+    grid-area: reload;
+    border: 2px solid;
+    border-color: rgb(183, 183, 184);
+    width: 50%;
+}
+.return {
+    display: flex;
+    justify-content: center;
+    grid-area: reload;
+    border: 2px solid;
+    border-color: rgb(183, 183, 184);
+    width: 50%;
+    align-self: flex-end;
+}
+
+.reload {
+    display: flex;
+    justify-content: center;
+    grid-area: reload;
+    border: 2px solid;
+    border-color: rgb(183, 183, 184);
+    width: 50%;
+}
+
+.head {
+    font-size: calc(10px + .5vw);
+    display: inline;
+    margin: 2vh 0;
+    grid-area: options;
+    max-width: 700px;
+    border-radius: 10 px;
+}
+
+.decks {
+    font-size: calc(10px + .4vw);
+    border-radius: 10 px;
+}
+
+.flex_container div {
+    margin: 5px 15px 5px 15px;
+    font-size: calc(12px + .5vw);
+    border-radius: 10 px;
+}
+
+
+/* Text outside the Card */
+
+#known {
+    grid-area: known;
+    text-align: center;
+    border-radius: 10 px;
+}
+.remaining {
+    grid-area: remaining;
+}
+
+#next {
+    grid-area: next;
+    text-align: center;
+}
+
+.margin{
+    width: 100%;
+    max-width: 240px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    position: relative;
+}
+
+
+.area{
+    display: none;
+}
+
+.area.active{
+    display: block;
+}
+
+
+div:target{
+    display: block; 
+}
+ /* Выделенный блок видим */
+
+/* Теперь магия, т.е. регулярные выражения, для удобства */
+
+div[id*=t]:target ~ #one { /* Для всех блоков, содержащих "t" в идентификаторе, делаем #one невидимым */
+    display: none; 
+} /* Обошлись одной буквой конкретно в этом случае, иначе придётся просто прописывать "tab" для всех вкладок сразу и отдельно для каждого не-#one */
+
+div[id*=tab]:target ~ #three { /* На последок, для всех вкладок делаем третью страницу видимой */
+    display: none; 
+}
+
+.tab{
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* full screen height */
+    width: 100vw; /* full screen width */
+}
+
+li#header-nickname{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+li#header-exit{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#mini-img{
+    border-radius: 100px;
+  }

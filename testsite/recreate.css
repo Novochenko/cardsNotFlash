@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+button#load-btn {
+    font-size: calc(20px);
+}
+select#json-select {
+    font-size: calc(20px);
+}
+button#edit-btn {
+    font-size: calc(20px);
+}
+
+.appbar-title{
+    font-size: calc(20px);
+}
+
+.mui--appbar-height{
+    font-size: 20px;
+}
+
+#edit{
+    color: gray;
+    display: block;
+    flex-wrap: wrap;
+    width: 25%;
+    height: 100px;
+    background-color: #d3dce6;
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 12px;
+    filter: drop-shadow(10px 7px 10px #5b5f61)
+}
+
+#edit:hover{
+    box-shadow: 0 0 10px rgba(48, 48, 48, 0.2);
+}
+#edit:active{
+    box-shadow: 0 0 10px rgba(48, 48, 48, 0.2);
+}
+
+input{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    top: 30%;
+    left: 50%;
+}
+
+#question-form{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 80vh;
+    margin: 0 auto;
+    width: 100%;
+}
+.lable{
+    text-align: center;
+    margin: 0 auto;
+    width: 30%;
+    height: 30%;
+}
+.add-lable{
+    display: inline-block;
+    margin-left: 10px;
+    width: 30%;
+    height: 30px;
+    border: solid 1px #999;
+    border-radius: 10px;
+    text-align: center;
+}
+
+div#edit-card{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#data-id{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+#data-id:nth-child(n){
+    animation: show 2s forwards; /* добавляем анимацию для каждого блока */
+    animation-delay: calc((n - 1) * 0.1s); /* рассчитываем delay для каждого блока */
+}
+@keyframes show {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+div#recreate-id{
+    position: relative;
+    width: 100%;
+    max-width: 200px;
+}
+div#edit.container-del{
+    width: 100%;
+    max-width: 200px;
+    
+    
+}
+div#tab\/four.area{
+    width: 100%;
+    max-width: 1300px;
+}
+
+div#rec-name{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

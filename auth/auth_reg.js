@@ -28,7 +28,8 @@ registerButton.addEventListener('click', (e) => {
  {
         if (response.ok){
           console.log('ok')
-          window.location.href= "../main/main.html"
+          //window.location.href= "../testsite/index.html"
+          location.reload();
         }
         else{
           console.log('error')

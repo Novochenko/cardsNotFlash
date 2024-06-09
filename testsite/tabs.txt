@@ -1,0 +1,12 @@
+            <input type="radio" id="home-button" name="tab" checked="true">        
+          <label for="home-button">Флеш-Карточки</label>
+            <input type="radio" id="user-button" name="tab">
+          <label for="user-button">Пользователь</label>
+            <input type="radio" id="add-card-button" name="tab">
+          <label for="add-card-button">Добавить карточку</label>
+            <input type="radio" id="edit-card-button" name="tab">
+          <label for="edit-card-button">Редактировать карточку</label>
+            <input type="radio" id="delete-card-button" name="tab">
+          <label for="delete-card-button">Удалить карточку</label>
+            <input type="radio" id="authors-button" name="tab">
+          <label for="authors-button">Авторы</label>

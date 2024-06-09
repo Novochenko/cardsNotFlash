@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+button#del-btn {
+    font-size: calc(20px);
+}
+
+.appbar-title{
+    font-size: calc(20px);
+}
+
+.mui--appbar-height{
+    font-size: 20px;
+}
+.delete-card{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+#box{
+    position: sticky;
+    display: block;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100px;
+    background-color: #d3dce6;
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 12px;
+    filter: drop-shadow(10px 7px 10px #5b5f61)
+}
+#box:hover{
+    box-shadow: 0 0 10px rgba(48, 48, 48, 0.2);
+}
+#box:active{
+    box-shadow: 0 0 10px rgba(48, 48, 48, 0.2);
+}
+
+.delete-list{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+div#delete-id{
+    position: relative;
+    width: 100%;
+    max-width: 200px;
+}
+div#del-name{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+div#tab\/five.area{
+    width: 100%;
+    max-width: 1300px;
+}

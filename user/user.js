@@ -1,24 +1,3 @@
-// function binEncode(data) {
-//   var binArray = []
-//   var datEncode = "";
-
-//   for (i=0; i < data.length; i++) {
-//       binArray.push(data[i].charCodeAt(0).toString(2)); 
-//   } 
-//   for (j=0; j < binArray.length; j++) {
-//       var pad = padding_left(binArray[j], '0', 8);
-//       datEncode += pad + ' '; 
-//   }
-//   function padding_left(s, c, n) { if (! s || ! c || s.length >= n) {
-//       return s;
-//   }
-//   var max = (n - s.length)/c.length;
-//   for (var i = 0; i < max; i++) {
-//       s = c + s; } return s;
-//   }
-//   console.log(binArray);
-// }
-
 // Отправляем запрос на сервер для получения аватарки
 fetch('https://localhost:443/private/lkshow/', {
   method: 'GET',
@@ -30,7 +9,7 @@ fetch('https://localhost:443/private/lkshow/', {
 .then((response) => response.formData())
 .then((data) => {
     const img = data.has('image');
-    const src = 'https://www.hdsfoods.co.uk/wp-content/uploads/2014/01/Potato-White.jpg';
+    let src = 'https://www.hdsfoods.co.uk/wp-content/uploads/2014/01/Potato-White.jpg';
     console.log(img);
 
     const user_id = data.get('user_id');
@@ -41,13 +20,16 @@ fetch('https://localhost:443/private/lkshow/', {
     const userTkn = document.getElementById("content-lk");
     // Обновляем аватарку и имя пользователя
     if (data.has('image')){
-      src.replace('www.hdsfoods.co.uk/wp-content/uploads/2014/01/Potato-White.jpg','localhost:443/images/pfpimages/${user_id}.png');
+      let newSrc = src.replace('www.hdsfoods.co.uk/wp-content/uploads/2014/01/Potato-White.jpg','localhost:10443/images/pfpimages/user_id.png');
+      newSrc = newSrc.replace('user_id', user_id);
+      src = newSrc;
     }
+    console.log(src);
     const userLk = document.createElement('div');
       userLk.innerHTML=`
       <div class="wrapper">
           <div class="left">
-              <img id="uploaded-image" src=${src} alt="Uploaded Image" width="200">
+              <img id="uploaded-image" src="${src}" alt="Uploaded Image" width="200">
               <h4>${nickname}</h4>
                <p>Designer</p>
                <input type="file" id="file-input" accept="image/png"/>

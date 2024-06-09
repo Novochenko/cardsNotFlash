@@ -29,7 +29,7 @@ const responseLogin = document.getElementById('login-response');
         //const cookie = sessionStorage.getItem('session', session)
         console.log('ok')
         //console.log(cookie)
-        window.location.href= "../main/main.html"
+        window.location.href= "../testsite/index.html"
       }
       else{
         console.log('error')
