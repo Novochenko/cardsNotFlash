@@ -31,7 +31,7 @@ button#del-btn {
     margin: 8px 0;
     padding: 10px 15px;
     border-radius: 12px;
-    filter: drop-shadow(10px 7px 10px #5b5f61)
+    filter: drop-shadow(5px 3px 5px #8c9092)
 }
 #box:hover{
     box-shadow: 0 0 10px rgba(48, 48, 48, 0.2);

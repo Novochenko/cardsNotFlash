@@ -1,5 +1,32 @@
 let cardList = [];
 
+const addGroup = document.getElementById('add-grp-btn');
+
+addGroup.addEventListener('click', (e)=>{
+  e.preventDefault();
+  const groupName = document.getElementById('group-name').value;
+  const groupJSON = {
+    "group_name": groupName
+  }
+  fetch('https://localhost:443/private/groupcreate',{
+    method:"POST",
+    credentials: "include",
+    headers:{
+      "Content-Type": "application/json",
+    },
+    body:JSON.stringify(groupJSON)
+  })
+  .then(response =>{
+    if(response.ok){
+      console.log('group was created successfully');
+      location.reload();
+    }
+    else{
+      console.log('group creation error');
+    }
+  })
+})
+
 const addForm = document.getElementById('question-form');
 
 const responseAdd = document.getElementById('response');
@@ -67,6 +94,7 @@ function selectChange(){
       .then(response => {
         if (response.ok){
           console.log('good add');
+          location.reload();
         }
         else{
           console.log('Error: карточка не добавлена');

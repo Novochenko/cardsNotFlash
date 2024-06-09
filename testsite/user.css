@@ -54,6 +54,7 @@ body{
 }
 
 .wrapper .right{
+  color: darkgray;
   width: 65%;
   background: #fff;
   padding: 30px 25px;
@@ -64,6 +65,7 @@ body{
 
 .wrapper .right .info,
 .wrapper .right .projects{
+  color: darkgray;
   margin-bottom: 25px;
 }
 
@@ -121,3 +123,8 @@ body{
   font-size: 18px;
 }
 
+#file-input{
+  width: 100%;
+  max-width: 300px;
+  border-color: darkgray;
+}

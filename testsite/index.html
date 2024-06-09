@@ -83,15 +83,21 @@
       <!--Пользователь-->
       <div class="area" id="tab/two"></div>
       
-      <!--Добавить карточку-->
+      <!--Добавить карточку или группу-->
       <div class="area" id="tab/three">
         <div id="question-form">
-          
-          <lable class="lable" for="list" id="fetch-cards">Выберите список:</lable>
-          <select  class="add-select" id="container-list" onchange="selectChange()"></select>
-          <input class="add-lable"  type="text" id="front-side" name="question" placeholder="Вопрос">
-          <input class="add-lable"  type="text" id="back-side" name="answer" placeholder="Ответ">
-          <button class="add-lable" id="add-btn">Отправить</button>
+          <div id="group-create">
+            <lable class="lable" for="add-group" id="add-group">Введите название новой группы</lable>
+            <input class="add-lable" type="text" id="group-name" name="group-name" placeholder="Название группы">
+            <button class="add-lable" id="add-grp-btn">Создать</button>
+          </div>
+          <div id="card-create">
+            <lable class="lable" for="list" id="fetch-cards">Выберите список для добавления карты:</lable>
+            <select  class="add-select" id="container-list" onchange="selectChange()"></select>
+            <input class="add-lable"  type="text" id="front-side" name="question" placeholder="Вопрос">
+            <input class="add-lable"  type="text" id="back-side" name="answer" placeholder="Ответ">
+            <button class="add-lable" id="add-btn">Отправить</button>
+          </div>
         </div>
         <div id="response"></div>
       </div>
