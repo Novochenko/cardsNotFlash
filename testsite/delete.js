@@ -26,8 +26,9 @@ return response.json()})
           <div class="card-back"><strong>${card.back_side}</strong></div>
         </div>
         `;
-        cardElement.id = "delete-id";
-        cardElement.dataset.id = k;
+        cardElement.className = "delete-id";
+        cardElement.dataset.id = card.id;
+        cardElement.id = k;
         k++;
         //cardElement.classList = "delete-list"
         cardList.appendChild(cardElement);

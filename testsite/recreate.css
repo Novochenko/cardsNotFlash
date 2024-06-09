@@ -94,7 +94,7 @@ div#edit-card{
     transition: opacity 0.5s;
 }
 
-#data-id:nth-child(n){
+.recreate-id:nth-child(n){
     animation: show 2s forwards; /* добавляем анимацию для каждого блока */
     animation-delay: calc((n - 1) * 0.1s); /* рассчитываем delay для каждого блока */
 }
@@ -107,7 +107,7 @@ div#edit-card{
     }
   }
 
-div#recreate-id{
+div.recreate-id{
     position: relative;
     width: 100%;
     max-width: 200px;

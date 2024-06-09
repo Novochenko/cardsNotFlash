@@ -46,7 +46,7 @@ button#del-btn {
     gap: 10px;
 }
 
-div#delete-id{
+div.delete-id{
     position: relative;
     width: 100%;
     max-width: 200px;
@@ -60,3 +60,16 @@ div#tab\/five.area{
     width: 100%;
     max-width: 1300px;
 }
+
+.delete-id:nth-child(n){
+    animation: show 2s forwards; /* добавляем анимацию для каждого блока */
+    animation-delay: calc((n - 1) * 0.1s); /* рассчитываем delay для каждого блока */
+}
+@keyframes show {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }

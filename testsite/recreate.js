@@ -17,9 +17,10 @@ fetch('https://localhost:443/private/show',{
       <div class="card-back"><strong>${card.back_side}</strong></div>
     </div>
     `;
-    cardElement.dataset.id = n;
+    cardElement.className = "recreate-id";
+    cardElement.id = n;
+    cardElement.dataset.id = card.id;
     n++;
-    cardElement.id = "recreate-id";
     cardContainer.appendChild(cardElement);
   });
   const listItems = cardContainer.children;
