@@ -69,6 +69,7 @@ function handleSelectChange() {
       .then(data => {
         // data.forEach(questionSetsJSON.map(item => [item.front_side, item.back_side]))
         const cards = data.map(card => ({
+            "card_id": card.card_id,
             "front_side": card.front_side,
             "back_side": card.back_side
           }));
@@ -116,7 +117,7 @@ function handleSelectChange() {
         let deckOptions = document.querySelector("#decks");
         deckOptions.addEventListener("change", (e) => {
             let selectedDeck = deckOptions.value - 1;
-            let lastDeckIDX = cardDeckOptions.indexOf(selectedDeck);
+            let lastDeckIDX = questionSet.indexOf(selectedDeck);
         
             defineQuestionSet(questionSetsJSON[lastDeckIDX]);
             newCard();
@@ -255,6 +256,27 @@ function handleSelectChange() {
         });
         correctBUTTON.addEventListener("click", () => {
             removeCardFromSet(true);
+            const cardsId = parseInt(cards.card_id);
+            const cardId = {
+                "card_id": cardsId
+            } 
+            console.log(cardsId,'cardId');
+            fetch('https://localhost:443/private/updatecardflag',{
+                method: "POST",
+                credentials: "include",
+                headers:{
+                    "Content-Type": "application/json"
+                },
+                body:JSON.stringify(cardId)
+            })
+            .then(response => {
+                if(response.ok){
+                    console.log('flag updated');
+                }
+                else{
+                    console.log('flag error');
+                }
+            })
         });
         
         // reload the page / begin from the beginning

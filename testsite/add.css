@@ -33,13 +33,6 @@ div#question-form {
     width: 100%;
 
 }
-div#group-create{
-
-}
-div#card-create{
-
-}
-
 .mui--appbar-height{
     font-size: 20px;
 }
@@ -57,13 +50,13 @@ div#card-create{
 }
 
 input#front-side.add-lable{
-    display: flex;
+    display: block;
     width: 100%;
     max-width: 200px;
 }
 
 input#back-side.add-lable{
-    display: flex;
+    display: block;
     width: 100%;
     max-width: 200px;
 }
@@ -85,7 +78,7 @@ lable#fetch-cards.lable{
     height: auto;
 }
 
-#question-form:nth-child(n){
+#question-form{
     animation: show 2s forwards; /* добавляем анимацию для каждого блока */
     animation-delay: calc((n - 1) * 0.1s); /* рассчитываем delay для каждого блока */
 }
@@ -97,3 +90,24 @@ lable#fetch-cards.lable{
       opacity: 1;
     }
   }
+
+div#card-create{
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    height: 80%;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+select#container-list.add-select{
+    justify-content: center;
+    align-items: center;
+}
+button#add-btn.add-lable{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 200px;
+}

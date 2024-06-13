@@ -239,13 +239,10 @@ button.wrong {
     display: block;
 }
 
-
 div:target{
     display: block; 
 }
  /* Выделенный блок видим */
-
-/* Теперь магия, т.е. регулярные выражения, для удобства */
 
 div[id*=t]:target ~ #one { /* Для всех блоков, содержащих "t" в идентификаторе, делаем #one невидимым */
     display: none; 
@@ -280,7 +277,7 @@ li#header-exit{
     border-radius: 100px;
   }
 
-.container:nth-child(n){
+.container{
     animation: show 2s forwards; /* добавляем анимацию для каждого блока */
     animation-delay: calc((n - 1) * 0.1s); /* рассчитываем delay для каждого блока */
 }
