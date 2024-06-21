@@ -36,6 +36,7 @@ func (ur *UserRepository) Create(u *model.User) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	res, err := stmt.Exec(u.Email, u.EncryptedPassword)
 	if err != nil {
 		return err
@@ -52,6 +53,7 @@ func (ur *UserRepository) Delete(id int64) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(id)
 	if err != nil {
 		return err

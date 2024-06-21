@@ -17,6 +17,7 @@ func (ulk *UsersLKRepository) Create(lk *model.UserLK, u *model.User) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	res, err := stmt.Exec(lk.UserID, lk.Nickname, u.Email, u.EncryptedPassword)
 	if err != nil {
 		return err
@@ -59,6 +60,7 @@ func (ulk *UsersLKRepository) LKDescriptionEdit(lk *model.UserLK) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	if _, err = stmt.Exec(lk.UserDescription, lk.UserID); err != nil {
 		return err
 	}

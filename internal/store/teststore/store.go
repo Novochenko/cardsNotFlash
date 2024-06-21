@@ -6,10 +6,11 @@ import (
 )
 
 type Store struct {
-	userRepository    *UserRepository
-	cardRepository    *CardRepository
-	usersLKRepository *UsersLKRepository
-	groupRepository   *GroupRepository
+	userRepository        *UserRepository
+	cardRepository        *CardRepository
+	usersLKRepository     *UsersLKRepository
+	groupRepository       *GroupRepository
+	cardsImagesRepository *CardsImagesRepository
 }
 
 // New ...
@@ -58,6 +59,16 @@ func (s *Store) Group() store.GroupRepository {
 		store: s,
 	}
 	return s.groupRepository
+}
+
+func (s *Store) CardImages() store.CardsImagesRepository {
+	if s.cardsImagesRepository != nil {
+		return s.cardsImagesRepository
+	}
+	s.cardsImagesRepository = &CardsImagesRepository{
+		store: s,
+	}
+	return s.cardsImagesRepository
 }
 
 func (s *Store) Images() string {

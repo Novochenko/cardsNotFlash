@@ -21,10 +21,13 @@ import (
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
+	// "github.com/mitchellh/mapstructure"
 )
 
 const (
 	sessionKeyName        = "session"
+	MaxImageSize          = 31457280 // 30mb in bytes
+	MaxImagesCount        = 10
 	ctxKeyUser     ctxKey = iota
 	ctxKeyRequestID
 )
@@ -195,46 +198,148 @@ func (s *server) HandleLKDescriptionEdit() http.HandlerFunc {
 		s.respond(w, r, http.StatusOK, nil)
 	}
 }
-func upload(values map[string]interface{}) (b *bytes.Buffer, dataType string, err error) {
-	// Prepare a form that you will submit to that URL.
-	b = &bytes.Buffer{}
-	w := multipart.NewWriter(b)
-	defer w.Close()
-	for key, r := range values {
-		if x, ok := r.(io.Closer); ok {
-			defer x.Close()
-		}
-		// Add an image file
-		if x, ok := r.(*os.File); ok {
-			if x == nil {
-				continue
-			}
-			part, err := w.CreateFormFile(key, x.Name())
-			if err != nil {
-				return nil, "", err
-			}
-			if _, err := io.Copy(part, x); err != nil {
-				return nil, "", err
-			}
-		}
-		if x, ok := r.(string); ok {
-			// Add other fields
-			if err = w.WriteField(key, x); err != nil {
-				return nil, "", err
-			}
-		}
-		if x, ok := r.(int64); ok {
-			// Add other fields
-			if err = w.WriteField(key, strconv.Itoa(int(x))); err != nil {
-				return nil, "", err
+
+//	func download(values map[string]interface{}) (b *bytes.Buffer, dataType string, err error) {
+//		// Prepare a form that you will submit to that URL.
+//		b = &bytes.Buffer{}
+//		w := multipart.NewWriter(b)
+//		defer w.Close()
+//		imagesCount := 0
+//		for key, r := range values {
+//			if x, ok := r.(io.Closer); ok {
+//				defer x.Close()
+//			}
+//			// Add an image file
+//			if x, ok := r.(*os.File); ok {
+//				if x == nil {
+//					continue
+//				}
+//				xStat, err := x.Stat()
+//				if err != nil {
+//					return nil, "", err
+//				}
+//				if size := xStat.Size(); size > MaxImageSize {
+//					return nil, "", store.ErrMaxSizeAttained
+//				}
+//				if imagesCount >= MaxImagesCount {
+//					slog.Error("imagesCount > maxImagesCount")
+//					continue
+//				}
+//				part, err := w.CreateFormFile(key, x.Name())
+//				if err != nil {
+//					return nil, "", err
+//				}
+//				if _, err := io.Copy(part, x); err != nil {
+//					return nil, "", err
+//				}
+//				imagesCount++
+//			}
+//			if x, ok := r.(string); ok {
+//				// Add other fields
+//				if err = w.WriteField(key, x); err != nil {
+//					return nil, "", err
+//				}
+//			}
+//			if x, ok := r.(int64); ok {
+//				// Add other fields
+//				if err = w.WriteField(key, strconv.Itoa(int(x))); err != nil {
+//					return nil, "", err
+//				}
+//			}
+//			dataType = w.FormDataContentType()
+//		}
+//		// Don't forget to close the multipart writer.
+//		// If you don't close it, your request will be missing the terminating boundary.
+//		return
+//	}
+
+/*
+Server -> Client send of multipart/form-data, dataType must be used first then sequentaly rw in a go func() and error from done channel handling
+usage template:
+
+w.Header().Set("Content-Type", dataType)
+w.WriteHeader(http.StatusOK)
+
+	go func() {
+		_, err := io.Copy(w, pr)
+		if err != nil {
+			error handling
+	}
+
+}()
+
+	if err = <-done; err != nil {
+		error handling
+	}
+
+close(done)
+
+	if err = closer(); err != nil {
+		error handling
+	}
+*/
+func download(values map[string]interface{}) (*io.PipeReader, func() error, string, chan error) {
+	imagesCount := 0
+	var dataType string
+	done := make(chan error)
+	pipeReader, pipeWriter := io.Pipe()
+	w := multipart.NewWriter(pipeWriter)
+	go func(pw *io.PipeWriter) {
+		defer w.Close()
+		for key, r := range values {
+			slog.Info(key)
+			switch value := r.(type) {
+			case *os.File:
+				if value == nil {
+					done <- store.ErrNilFile
+					return
+				}
+				xStat, err := value.Stat()
+				if err != nil {
+					done <- err
+					return
+				}
+				if size := xStat.Size(); size > MaxImageSize {
+					done <- store.ErrMaxSizeAttained
+					return
+				}
+				if imagesCount >= MaxImagesCount {
+					done <- store.ErrMaxImagesAttained
+					return
+				}
+				part, err := w.CreateFormFile(key, value.Name())
+				if err != nil {
+					done <- err
+					return
+				}
+				if _, err := io.Copy(part, value); err != nil {
+					done <- err
+					return
+				}
+				imagesCount++
+			case string:
+				if err := w.WriteField(key, value); err != nil {
+					done <- err
+				}
+			case int64:
+				if err := w.WriteField(key, strconv.Itoa(int(value))); err != nil {
+					done <- err
+				}
 			}
 		}
 		dataType = w.FormDataContentType()
+		done <- nil
+	}(pipeWriter)
+	closer := func() error {
+		if err := pipeReader.Close(); err != nil {
+			return err
+		}
+		if err := pipeWriter.Close(); err != nil {
+			return err
+		}
+		return nil
 	}
-
-	// Don't forget to close the multipart writer.
-	// If you don't close it, your request will be missing the terminating boundary.
-	return
+	return pipeReader, closer, dataType, done
 }
 
 // Close() обязательно
@@ -275,20 +380,26 @@ func (s *server) HandleLKShow() http.HandlerFunc {
 			lk.Image = file
 		}
 		m := structs.Map(lk)
-		buf, dataType, err := upload(m)
-		if err != nil {
+		pr, closer, dataType, done := download(m)
+		w.Header().Set("Content-Type", dataType)
+		w.WriteHeader(http.StatusOK)
+		go func() {
+			n, err := io.Copy(w, pr)
+			slog.Info(strconv.Itoa(int(n)))
+			if err != nil {
+				s.error(w, r, http.StatusInternalServerError, err)
+				return
+			}
+		}()
+		if err = <-done; err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
-		slog.Info(fmt.Sprint(m))
-		w.Header().Set("Content-Type", dataType)
-		w.Write(buf.Bytes())
-
-		// w.Header().Set("Content-Type", "application/json")
-		// if err := json.NewEncoder(w).Encode(lk); err != nil {
-		// 	s.error(w, r, http.StatusInternalServerError, err)
-		// 	return
-		// }
+		close(done)
+		if err = closer(); err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
 	}
 }
 
@@ -588,18 +699,128 @@ func (s *server) HandleSessionsCreate() http.HandlerFunc {
 	}
 }
 
+func (s *server) uploadCard(r *http.Request, values map[string]interface{}, userID int64) (uuidSlice uuid.UUIDs, err error) {
+	reader, err := r.MultipartReader()
+	if err != nil {
+		return nil, err
+	}
+	b := bytes.NewBuffer(nil)
+	uuidSlice = make(uuid.UUIDs, 0)
+	for {
+		part, err := reader.NextPart()
+		if err == io.EOF {
+			break
+		}
+		switch part.FormName() {
+		case "front_side_images":
+			uuid := uuid.New()
+			cardImage := &model.CardImages{
+				UserID:  userID,
+				ImageID: uuid,
+			}
+			file, err := s.store.CardImages().Add(cardImage, true)
+			if err != nil {
+				s.store.CardImages().DeleteOnError(uuidSlice)
+				return uuidSlice, err
+			}
+			if _, err := io.Copy(file, part); err != nil {
+				s.store.CardImages().DeleteOnError(uuidSlice)
+				return uuidSlice, err
+			}
+			file.Close()
+			uuidSlice = append(uuidSlice, uuid)
+		case "back_side_images":
+			uuid := uuid.New()
+			cardImage := &model.CardImages{
+				UserID:  userID,
+				ImageID: uuid,
+			}
+			file, err := s.store.CardImages().Add(cardImage, false)
+			if err != nil {
+				s.store.CardImages().DeleteOnError(uuidSlice)
+				return uuidSlice, err
+			}
+			if _, err := io.Copy(file, part); err != nil {
+				s.store.CardImages().DeleteOnError(uuidSlice)
+				return uuidSlice, err
+			}
+			file.Close()
+			uuidSlice = append(uuidSlice, uuid)
+		case "group_id":
+			b.ReadFrom(part)
+			tmp, err := strconv.Atoi(b.String())
+			err = errors.New("blabla")
+			if err != nil {
+				s.store.CardImages().DeleteOnError(uuidSlice)
+				return uuidSlice, err
+			}
+			values["group_id"] = int64(tmp)
+			b.Reset()
+		case "front_side":
+			b.ReadFrom(part)
+			values["front_side"] = b.String()
+			b.Reset()
+		case "back_side":
+			b.ReadFrom(part)
+			values["back_side"] = b.String()
+			b.Reset()
+		}
+	}
+	return uuidSlice, err
+}
+
+//	func (s *server) HandleCardCreate() http.HandlerFunc {
+//		type request struct {
+//			FrontSide string `json:"front_side"`
+//			BackSide  string `json:"back_side"`
+//			GroupID   int64  `json:"group_id"`
+//		}
+//		type reqImg struct {
+//			FrontSide       string     `json:"front_side"`
+//			BackSide        string     `json:"back_side"`
+//			GroupID         int64      `json:"group_id"`
+//			FrontsideImages []*bytes.Buffer `json:"front_side_images"`
+//			BacksideImages  []*bytes.Buffer `json:"back_side_images"`
+//		}
+//		return func(w http.ResponseWriter, r *http.Request) {
+//			req := &request{}
+//			if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+//				s.error(w, r, http.StatusBadRequest, err)
+//				return
+//			}
+//			session, err := s.sessionStore.Get(r, sessionKeyName)
+//			if err != nil {
+//				s.error(w, r, http.StatusInternalServerError, err)
+//				return
+//			}
+//			id, ok := session.Values["user_id"]
+//			if !ok {
+//				s.error(w, r, http.StatusUnauthorized, err)
+//				return
+//			}
+//			card := &model.Card{
+//				UserID:    id.(int64),
+//				FrontSide: req.FrontSide,
+//				BackSide:  req.BackSide,
+//				GroupID:   req.GroupID,
+//			}
+//			if err := s.store.Card().Create(card); err != nil {
+//				s.error(w, r, http.StatusUnprocessableEntity, err)
+//				return
+//			}
+//		}
+//	}
 func (s *server) HandleCardCreate() http.HandlerFunc {
-	type request struct {
-		FrontSide string `json:"front_side"`
-		BackSide  string `json:"back_side"`
-		GroupID   int64  `json:"group_id"`
+
+	type reqImg struct {
+		FrontSide       string           `structs:"front_side" mapstructure:"front_side"`
+		BackSide        string           `structs:"back_side" mapstructure:"back_side"`
+		GroupID         int64            `structs:"group_id" mapstructure:"group_id"`
+		FrontsideImages []*io.PipeReader `structs:"front_side_images" mapstructure:"front_side_images"`
+		BacksideImages  []*io.PipeReader `structs:"back_side_images" mapstructure:"back_side_images"`
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		req := &request{}
-		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-			s.error(w, r, http.StatusBadRequest, err)
-			return
-		}
+		req := &reqImg{}
 		session, err := s.sessionStore.Get(r, sessionKeyName)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
@@ -610,16 +831,26 @@ func (s *server) HandleCardCreate() http.HandlerFunc {
 			s.error(w, r, http.StatusUnauthorized, err)
 			return
 		}
-
+		m := structs.Map(req)
+		uuIDs, err := s.uploadCard(r, m, id.(int64))
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		}
 		card := &model.Card{
 			UserID:    id.(int64),
-			FrontSide: req.FrontSide,
-			BackSide:  req.BackSide,
-			GroupID:   req.GroupID,
+			FrontSide: m["front_side"].(string),
+			BackSide:  m["back_side"].(string),
+			GroupID:   m["group_id"].(int64),
 		}
 		if err := s.store.Card().Create(card); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
-			return
+		}
+		for _, v := range uuIDs {
+			if err := s.store.CardImages().CardIDUpdate(card.ID, v); err != nil {
+				s.error(w, r, http.StatusInternalServerError, err)
+				return
+			}
 		}
 	}
 }
@@ -652,7 +883,6 @@ func (s *server) HandleDeleteCard() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
-		//s.respond(w, r, http.StatusOK, nil)
 	}
 }
 
@@ -675,7 +905,6 @@ func (s *server) HandlePFPUpload() http.HandlerFunc {
 			return
 		}
 		defer file.Close()
-		//buf := bytes.NewBuffer(nil)
 		if _, err := io.Copy(file, r.Body); err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
@@ -729,8 +958,14 @@ func (s *server) HandleShow() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
+		// cardImages, err := s.store.CardImages().Show(cards)
+		// if err != nil {
+		// 	s.error(w, r, http.StatusInternalServerError, err)
+		// 	return
+		// }
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
+
 		if err := json.NewEncoder(w).Encode(cards); err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return

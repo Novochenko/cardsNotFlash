@@ -19,6 +19,7 @@ func (gr *GroupRepository) Create(g *model.Group) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	res, err := stmt.Exec(g.GroupName, g.UserID)
 	if err != nil {
 		return err
@@ -36,6 +37,7 @@ func (gr *GroupRepository) Delete(g *model.Group) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(g.GroupID, g.UserID)
 	if err != nil {
 		return err
@@ -98,6 +100,7 @@ func (gr *GroupRepository) Edit(g *model.Group) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(g.GroupName, g.GroupID, g.UserID)
 	if err != nil {
 		return err

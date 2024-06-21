@@ -8,12 +8,13 @@ import (
 )
 
 type Store struct {
-	db                *sql.DB
-	images            string
-	userRepository    *UserRepository
-	cardRepository    *CardRepository
-	usersLKRepository *UsersLKRepository
-	groupRepository   *GroupRepository
+	db                    *sql.DB
+	images                string
+	userRepository        *UserRepository
+	cardRepository        *CardRepository
+	usersLKRepository     *UsersLKRepository
+	groupRepository       *GroupRepository
+	cardsImagesRepository *CardsImagesRepository
 }
 
 func New(db *sql.DB, imagePath string) *Store {
@@ -61,6 +62,17 @@ func (s *Store) Group() store.GroupRepository {
 	}
 	return s.groupRepository
 }
+
+func (s *Store) CardImages() store.CardsImagesRepository {
+	if s.cardsImagesRepository != nil {
+		return s.cardsImagesRepository
+	}
+	s.cardsImagesRepository = &CardsImagesRepository{
+		store: s,
+	}
+	return s.cardsImagesRepository
+}
+
 func (s *Store) Images() string {
 	return s.images
 }

@@ -42,6 +42,7 @@ func (cr *CardRepository) Create(c *model.Card) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	res, err := stmt.Exec(c.UserID, c.FrontSide, c.BackSide, Start, c.GroupID)
 	if err != nil {
 		return err
@@ -59,6 +60,7 @@ func (cr *CardRepository) Delete(c *model.Card) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(c.ID, c.UserID)
 	if err != nil {
 		return err
@@ -98,6 +100,7 @@ func (cr *CardRepository) Edit(c *model.Card) error {
 	if err != nil {
 		return err
 	}
+	defer stmt.Close()
 	_, err = stmt.Exec(c.FrontSide, c.BackSide, Start, c.ID, c.UserID)
 	if err != nil {
 		return err
@@ -109,10 +112,6 @@ func (cr *CardRepository) Edit(c *model.Card) error {
 	return nil
 }
 
-/*
-сделай так, чтобы через один запрос в бд приходили карты,
-то есть чтобы автоматом флаг превращался в минуты и попадал в селект запрос
-*/
 func (cr *CardRepository) ShowUsingTime(c *model.Card) ([]*model.Card, error) {
 	cards := []*model.Card{}
 	rows, err := cr.store.db.Query(`SELECT card_id, front_side, back_side, time_flag, card_time, time_flag
@@ -137,9 +136,6 @@ func (cr *CardRepository) ShowUsingTime(c *model.Card) ([]*model.Card, error) {
 	if len(cards) == 0 {
 		return cards, store.ErrRecordNotFound
 	}
-	// if err = cr.cardFlagUp(cards); err != nil {
-	// 	return nil, err
-	// }
 	return cards, nil
 }
 
@@ -156,7 +152,6 @@ func (cr *CardRepository) CardFlagUp(card *model.Card) error {
 		return err
 	}
 	var currentT string
-
 	for i := 0; i < len(cardFlags); i++ {
 		v := cardFlags[uint(i)]
 		v1, err := time.Parse("15:04:05", v)
@@ -182,6 +177,5 @@ func (cr *CardRepository) CardFlagUp(card *model.Card) error {
 		return err
 	}
 	card.TimeFlagString = currentT
-
 	return nil
 }

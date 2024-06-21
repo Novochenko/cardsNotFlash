@@ -69,3 +69,11 @@ BEGIN
     WHERE card_groups.user_id = OLD.user_id AND card_groups.group_id = OLD.group_id;
 END; //
 delimiter ;
+create table card_images(
+	image_id binary(16) primary key,
+	card_id int default null,
+    user_id int,
+    front_side bool default false,
+    back_side bool default false,
+    foreign key (user_id) references cards(user_id) on delete cascade
+);

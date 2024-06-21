@@ -1,6 +1,11 @@
 package store
 
-import "firstRestAPI/internal/model"
+import (
+	"firstRestAPI/internal/model"
+	"os"
+
+	"github.com/google/uuid"
+)
 
 type UserRepository interface {
 	Create(*model.User) error
@@ -32,4 +37,13 @@ type GroupRepository interface {
 	Show(*model.Group) ([]*model.Card, error)
 	Edit(*model.Group) error
 	ShowUsingTime(g *model.Group) ([]*model.Card, error)
+}
+
+type CardsImagesRepository interface {
+	Add(image *model.CardImages, isFrontSide bool) (*os.File, error)
+	CardIDUpdate(cardID int64, uuID uuid.UUID) error
+	Delete(images []*model.CardImages) error
+	DeleteOnError(imageIDs uuid.UUIDs) error
+	Edit(images []*model.CardImages, buf [][]byte) error
+	Show(cards []*model.Card) ([]*model.CardImages, error)
 }

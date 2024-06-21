@@ -12,10 +12,6 @@ func (t rawTime) Time() (time.Time, error) {
 	return time.Parse("15:04:05", string(t))
 }
 
-// func (t rawTime) Format() (string, error){
-// 	return time.Now().Format()
-// }
-
 type Card struct {
 	ID             int64     `json:"id"`
 	UserID         int64     `json:"user_id"`
@@ -41,7 +37,6 @@ func (c *Card) ValidateEdit() error {
 		c,
 		validation.Field(&c.FrontSide, validation.Required),
 		validation.Field(&c.BackSide, validation.Required),
-		//validation.Field(&c.UserID, validation.Required),
 		validation.Field(&c.ID, validation.Required),
 	)
 }
@@ -49,7 +44,6 @@ func (c *Card) ValidateEdit() error {
 func (c *Card) ValidateDelete() error {
 	return validation.ValidateStruct(
 		c,
-		//validation.Field(&c.UserID, validation.Required),
 		validation.Field(&c.ID, validation.Required),
 	)
 }
